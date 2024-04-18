@@ -1,44 +1,42 @@
 import { MongoClient } from "mongodb";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
     try {
-        const movieQuery = await req.json();
-        const uri = process.env.MONGODB_URL as string;
+        const searchParams = req.nextUrl.searchParams;
+        const embedding = searchParams.get("embedding");
+        const queryVector: number[] | undefined = embedding?.split(',').map(Number); 
 
+        const uri = process.env.MONGODB_URL as string;
         const client = new MongoClient(uri);
         await client.connect();
 
         const db = client.db("dl");
         const collection = db.collection("movies");
 
-        const documents = await collection
-            .aggregate([
-                {
-                    $vectorSearch: {
-                        queryVector: movieQuery,
-                        path: "embedding",
-                        numCandidates: 50,
-                        limit: 10,
-                        index: "rabotai"
-                    },
+        const documents = await collection.aggregate([
+            {
+                $vectorSearch: {
+                    queryVector: queryVector,
+                    path: "embedding",
+                    numCandidates: 150,
+                    limit: 10,
+                    index: "rabotai"
                 },
-                {
-                    $project: {
-                        title: 1,
-                        _id: 0
-                    }
+            },
+            {
+                $project: {
+                    title: 1,
+                    _id: 0
                 }
-            ]).toArray();
-        // Close the MongoDB connection
-        await client.close();
-        console.log(documents);
+            }
+        ]).toArray();
 
-        // Respond with a success message
-        return NextResponse.json({ message: "Embedding received and saved to MongoDB!" });
+        await client.close();
+
+        return NextResponse.json({ similar_docs: documents });
     } catch (error) {
         console.error("Error:", error);
-        return NextResponse.json({message: "error"});
+        return NextResponse.json({ message: "error" });
     }
 }
