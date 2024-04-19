@@ -10,3 +10,19 @@ declare type movie_with_embedding = {
     cast: string[];
     embedding: number[];
   }
+
+  declare type CreateUserParams = {
+    clerkId: string;
+    email: string;
+    username: string;
+    photo: string;
+    firstName: string;
+    lastName: string;
+}
+
+declare type UpdateUserParams = {
+    username: string;
+    photo: string;
+    firstName: string;
+    lastName: string;
+}

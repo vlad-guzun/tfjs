@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/database/connectToDatabase";
-import Movie from "@/lib/models/movie.model";
+import Movie from "@/lib/database/models/movie.model";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request){
