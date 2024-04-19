@@ -10,6 +10,7 @@ export async function createUser(user: CreateUserParams) {
     await connectToDatabase();
 
     const newUser = await User.create(user);
+
     return JSON.parse(JSON.stringify(newUser));
   } catch (error) {
     console.log(error);
@@ -21,6 +22,7 @@ export async function getUserById(userId: string) {
     await connectToDatabase();
 
     const user = await User.findOne({ clerkId: userId });
+
     if (!user) throw new Error("User not found");
 
     return JSON.parse(JSON.stringify(user));
@@ -32,6 +34,7 @@ export async function getUserById(userId: string) {
 export async function updateUser(clerkId: string, user: UpdateUserParams) {
   try {
     await connectToDatabase();
+
     const updatedUser = await User.findOneAndUpdate({ clerkId }, user, {
       new: true,
     });
@@ -49,6 +52,7 @@ export async function deleteUser(clerkId: string) {
     await connectToDatabase();
 
     const userToDelete = await User.findOne({ clerkId });
+
     if (!userToDelete) {
       throw new Error("User not found");
     }
