@@ -12,17 +12,17 @@ declare type movie_with_embedding = {
   }
 
   declare type CreateUserParams = {
-    clerkId: string;
-    email: string;
-    username: string;
-    photo: string;
-    firstName: string;
-    lastName: string;
-}
+  clerkId: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  photo: string;
+};
 
 declare type UpdateUserParams = {
-    username: string;
-    photo: string;
     firstName: string;
     lastName: string;
-}
+    username: string;
+    photo: string;
+  };
