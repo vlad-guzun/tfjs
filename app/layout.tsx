@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import Link from "next/link";
+import Image from "next/image";
+import { SignedIn, UserButton } from "@clerk/nextjs";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,9 +21,26 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-        <html lang="en">
-          <body className={inter.className}>{children}</body>
-        </html>
-      </ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <div className="w-full h-screen flex">
+            <div className="w-0 md:w-1/6 border-black lg:border-r hidden lg:block">
+              <div>
+                <Link href={"/"} >Home</Link>
+              </div>
+              <div>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </div>
+            </div>
+            <div className="w-2/3 border-black lg:border-r">{children}</div>
+            <div className="w-0 md:w-1/6   lg:border-r flex flex-col justify-between">
+                <div className="m-3 hidden lg:block"><Link href={"/similar"}>find someone</Link></div>
+            </div>
+          </div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

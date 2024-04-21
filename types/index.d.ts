@@ -26,3 +26,15 @@ declare type movie_with_embedding = {
     username: string;
     photo: string;
   };
+
+  declare type User_with_interests_location_reason = {
+    clerkId: string,
+    email: string,
+    username: string,
+    firstName: string,
+    lastName: string,
+    photo: string,
+    interests: string,
+    location: string,
+    reasonForJoining: string,
+  }

@@ -1,9 +1,12 @@
 "use client";
+
 require("@tensorflow/tfjs");
-import { useEffect } from "react";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
+import { useEffect, useState } from "react";
 
 const Query = () => {
+  const [similarDocs, setSimilarDocs] = useState<any[]>([]);
+
   useEffect(() => {
     async function embedSentence() {
       try {
@@ -14,7 +17,7 @@ const Query = () => {
         const queryString = finalEmbedding.join(",");
         const response = await fetch(`/api/query?embedding=${queryString}`);
         const similar_docs = await response.json();
-        console.log(similar_docs);
+        setSimilarDocs(similar_docs.similar_docs); 
       } catch (error) {
         console.error("Error embedding sentence:", error);
       }
@@ -23,7 +26,13 @@ const Query = () => {
     embedSentence();
   }, []);
 
-  return <div></div>;
+  return (
+    <div>
+      {similarDocs.map((doc, index) => (
+        <div key={index}>{doc.title}</div> 
+      ))}
+    </div>
+  );
 };
 
 export default Query;
