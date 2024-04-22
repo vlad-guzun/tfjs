@@ -11,6 +11,7 @@ export default async function Home() {
     //sterge aici async dac treb, dar pana ce lasal, oricum nu 
     const user = await currentUser();
     const clerkId = user?.id;
+    
 
 
 

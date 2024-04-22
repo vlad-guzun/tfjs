@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Modal";
 import Interests from "./Interests";
 import Location from "./Location";
@@ -15,7 +15,21 @@ const StarterModal = ({clerkId}: {clerkId: string | undefined}) => {
   const [location, setLocation] = useState("");
   const [reasonForJoining, setReasonForJoining] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [renderStarterModal, setRenderStarterModal] = useState<boolean>(false);
 
+  useEffect(() => {
+    async function checkRenderModal() {
+        const response = await fetch(`/api/check_render_modal?clerkId=${clerkId}`);
+        const data = await response.json();
+        if(data.message === "don't render the starter modal"){  
+            setRenderStarterModal(false);
+         } 
+        else{
+            setRenderStarterModal(true);
+      }
+    }
+    checkRenderModal();
+}, []);
   
 
   const handleNext = () => {
@@ -39,7 +53,15 @@ const StarterModal = ({clerkId}: {clerkId: string | undefined}) => {
   };
 
   const handleSubmit = async() => {
-    console.log({clerkId, interests, location, reasonForJoining});
+      await fetch("/api/send_data_without_embeddings", {
+      method: "POST",
+      body: JSON.stringify({
+        clerkId,
+        interests,
+        location,
+        reasonForJoining,
+      }),
+    });
   }
 
   const handleCloseModal = () => {
@@ -49,6 +71,7 @@ const StarterModal = ({clerkId}: {clerkId: string | undefined}) => {
   
 
   return (
+    renderStarterModal && (
     <Modal isOpen={isModalOpen}>
       {step === 1 && <Interests onNext={handleNext} onSave={handleSaveInterests} />}
       {step === 2 && <Location onNext={handleNext} onPrev={handlePrev} onSave={handleSaveLocation} />}
@@ -65,7 +88,7 @@ const StarterModal = ({clerkId}: {clerkId: string | undefined}) => {
           onClose={handleCloseModal}
         />
       )}
-    </Modal>
+    </Modal> ) 
   );
 };
 
