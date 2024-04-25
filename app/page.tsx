@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
   const [modalSubmitted, setModalSubmitted] = useState<boolean>(false);
+  const [userDoc, setUserDoc] = useState<any>();
     //sterge aici async dac treb, dar pana ce lasal, oricum nu 
     const {user,isLoaded} = useUser();
     useEffect(() => {
@@ -29,7 +30,7 @@ export default function Home() {
           if(response.ok){
             const user = await fetch(`/api/user?clerkId=${clerkId}`);
             const data = await user.json();
-            console.log(data);
+            setUserDoc(data);
           }
         }
         check_if_the_modal_is_submitted_and_get_the_full_user();
@@ -43,6 +44,9 @@ export default function Home() {
     <div>
       <StarterModal clerkId={clerkId} setModalSubmitted={setModalSubmitted}/>
       <h1 className='text-4xl text-red-700'>{clerkId}</h1>
+      <h1 className='text-4xl text-red-700'>{userDoc?.location}</h1>
+      <h1 className='text-4xl text-red-700'>{userDoc?.interests}</h1>
+      <h1 className='text-4xl text-red-700'>{userDoc?.reasonForJoining}</h1>
     </div>    
   );
 }

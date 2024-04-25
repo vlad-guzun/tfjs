@@ -18,13 +18,10 @@ const StarterModal = ({ clerkId,setModalSubmitted }: { clerkId: string | undefin
   useEffect(() => {
     async function checkRenderModal() {
       const response = await fetch(`/api/check_render_modal?clerkId=${clerkId}`);
-      const data = await response.json();  
-      if (data.message === "don't render the starter modal") {
-        setShouldRenderStarterModal(false);
-      } else {
-        setShouldRenderStarterModal(true);
-      }
-    }
+      if(!response.ok) setShouldRenderStarterModal(true);
+      const data = await response.json();
+      if(data.message === "don't render the starter modal") setShouldRenderStarterModal(false);
+    } 
     checkRenderModal();
   }, [clerkId]);
 
