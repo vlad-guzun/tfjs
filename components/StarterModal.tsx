@@ -6,18 +6,19 @@ import Location from "./Location";
 import ReasonForJoining from "./ReasonForJoining";
 import CheckDetails from "./CheckDetails";
 
-const StarterModal = ({ clerkId }: { clerkId: string | undefined }) => {
+const StarterModal = ({ clerkId,setModalSubmitted }: { clerkId: string | undefined, setModalSubmitted: (value: boolean) => void }) => {
   const [step, setStep] = useState(1);
   const [interests, setInterests] = useState("");
   const [location, setLocation] = useState("");
   const [reasonForJoining, setReasonForJoining] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [shouldRenderStarterModal, setShouldRenderStarterModal] = useState<boolean>(true);
+  const [formSubmitted, setFormSubmitted] = useState(false); 
 
   useEffect(() => {
     async function checkRenderModal() {
       const response = await fetch(`/api/check_render_modal?clerkId=${clerkId}`);
-      const data = await response.json();
+      const data = await response.json();  
       if (data.message === "don't render the starter modal") {
         setShouldRenderStarterModal(false);
       } else {
@@ -26,6 +27,17 @@ const StarterModal = ({ clerkId }: { clerkId: string | undefined }) => {
     }
     checkRenderModal();
   }, [clerkId]);
+
+  useEffect(() => {
+    if (formSubmitted) {
+      const modalSubmitted = async () => {
+         await fetch(`/api/completed_submitting_modal?clerkId=${clerkId}`);
+      }
+      console.log("modal submitted");
+      modalSubmitted();
+      setFormSubmitted(false); // asta ii sa nu iti dea fata sens acolo in console , nu mai pasa din viata functie!!!!
+    }
+  }, [formSubmitted]);
 
   const handleNext = () => {
     setStep(step + 1);
@@ -57,6 +69,8 @@ const StarterModal = ({ clerkId }: { clerkId: string | undefined }) => {
         reasonForJoining,
       }),
     });
+    setFormSubmitted(true); 
+    setModalSubmitted(true); // aici!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   };
 
   const handleCloseModal = () => {
