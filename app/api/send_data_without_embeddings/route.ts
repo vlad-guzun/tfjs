@@ -1,15 +1,17 @@
 import { connectToDatabase } from "@/lib/database/connectToDatabase";
 import FullUser from "@/lib/database/models/fullUser.model";
 import User from "@/lib/database/models/user.model"; 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-
-
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
     try {
-        const { clerkId, interests, location, reasonForJoining } = await req.json(); 
+        const searchParams = req.nextUrl.searchParams;
+        const clerkId = searchParams.get("clerkId");
+        const interests = searchParams.get("interests");
+        const location = searchParams.get("location");
+        const reasonForJoining = searchParams.get("reasonForJoining");
 
-        connectToDatabase(); 
+        connectToDatabase();
 
         const registeredUser = await User.findOne({ clerkId });
 
@@ -19,21 +21,22 @@ export async function POST(req: Request) {
 
         const { email, photo, firstName, lastName, username } = registeredUser;
 
-        const user: User_with_interests_location_reason = {
+        const fullUser = {
             clerkId,
-            email,
-            username,
-            firstName,
-            lastName,
-            photo,
             interests,
             location,
             reasonForJoining,
+            email,
+            photo,
+            firstName,
+            lastName,
+            username
         };
-        const updatedUser = await FullUser.create(user);
+        const fullUserDoc = new FullUser(fullUser);
+        await fullUserDoc.save();
 
-        return NextResponse.json({ updatedUser });
+        return NextResponse.json(fullUser);
     } catch (error) {
-        throw new Error("internal server error"); 
+        console.error(error);
     }
 }
