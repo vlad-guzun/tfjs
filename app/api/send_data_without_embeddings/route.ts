@@ -37,6 +37,6 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(fullUser);
     } catch (error) {
-        console.error(error);
+        NextResponse.json({ error}, { status: 500 });
     }
 }
