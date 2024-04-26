@@ -3,6 +3,8 @@ import FullUser from "@/lib/database/models/fullUser.model";
 import User from "@/lib/database/models/user.model"; 
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 
 export async function GET(req: NextRequest) {
     try {
