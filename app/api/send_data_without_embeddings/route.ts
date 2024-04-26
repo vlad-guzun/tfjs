@@ -3,6 +3,7 @@ import FullUser from "@/lib/database/models/fullUser.model";
 import User from "@/lib/database/models/user.model"; 
 import { NextRequest, NextResponse } from "next/server";
 
+
 export async function GET(req: NextRequest) {
     try {
         const searchParams = req.nextUrl.searchParams;
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
         const registeredUser = await User.findOne({ clerkId });
 
         if (!registeredUser) {
-            throw new Error("User not found");
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         const { email, photo, firstName, lastName, username } = registeredUser;
