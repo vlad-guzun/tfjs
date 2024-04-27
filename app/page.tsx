@@ -40,9 +40,30 @@ export default function Home() {
           const { clerkId, interests, location, reasonForJoining } = userDoc || {};
           const model = await use.load();
           const embeddings = await model.embed([interests, location, reasonForJoining]);
-          console.log(embeddings.arraySync()[0]);
-          console.log(embeddings.arraySync()[1]);
-          console.log(embeddings.arraySync()[2]);
+          const embedded_interests = embeddings.arraySync()[0];
+          const embedded_location = embeddings.arraySync()[1];
+          const embedded_reason_for_joining = embeddings.arraySync()[2];
+          try{
+          const response = await fetch("/api/save_to_db_embedded_user", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              clerkId,
+              embeddedInterests: embedded_interests,
+              embeddedLocation: embedded_location,
+              embeddedReasonForJoining: embedded_reason_for_joining,
+            }),
+          });
+          if(response.ok){
+            const data = await response.json();
+            console.log(data);
+          }
+          else console.log(response.statusText + "raspuns nehorosii");
+          } catch (error) {
+              console.error(error);
+          }
         };
         embed_user_interests_location_reason_for_joining();
       }
