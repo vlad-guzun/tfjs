@@ -40,6 +40,6 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(fullUser);
     } catch (error) {
-        NextResponse.json({ error}, { status: 500 });
+       return NextResponse.json({ error}, { status: 500 });
     }
 }
