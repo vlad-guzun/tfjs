@@ -7,6 +7,7 @@ import StarterModal from "@/components/StarterModal";
 import { currentUser } from '@clerk/nextjs/server';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 
 
 
@@ -24,25 +25,21 @@ export default function Home() {
     }, [user,isLoaded]);
 
     useEffect(() => {
-      if(modalSubmitted){
         const check_if_the_modal_is_submitted_and_get_the_full_user = async () => {
-          const response = await fetch(`/api/check_modal_submitted?clerkId=${clerkId}`);
-          if(response.ok){
+          
             const user = await fetch(`/api/user?clerkId=${clerkId}`);
             const data = await user.json();
             setUserDoc(data);
-          }
         }
         check_if_the_modal_is_submitted_and_get_the_full_user();
-      }
-    },[modalSubmitted]);
+    },[Cookies.get(`modalSubmitted_${clerkId}`) === "true"]);
 
 
 
 
   return (
     <div>
-      <StarterModal clerkId={clerkId} setModalSubmitted={setModalSubmitted}/>
+      <StarterModal clerkId={clerkId}/>
       <h1 className='text-4xl text-red-700'>{clerkId}</h1>
       <h1 className='text-4xl text-red-700'>{userDoc?.location}</h1>
       <h1 className='text-4xl text-red-700'>{userDoc?.interests}</h1>

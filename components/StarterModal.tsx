@@ -7,7 +7,7 @@ import Location from "./Location";
 import ReasonForJoining from "./ReasonForJoining";
 import CheckDetails from "./CheckDetails";
 
-const StarterModal = ({ clerkId, setModalSubmitted }: { clerkId: string | undefined, setModalSubmitted: (value: boolean) => void }) => {
+const StarterModal = ({ clerkId }: { clerkId: string | undefined }) => {
   const [step, setStep] = useState(1);
   const [interests, setInterests] = useState("");
   const [location, setLocation] = useState("");
@@ -53,7 +53,6 @@ const StarterModal = ({ clerkId, setModalSubmitted }: { clerkId: string | undefi
 
     await fetch(url, { method: "GET" });
     setFormSubmitted(true);
-    setModalSubmitted(true);
     setIsModalOpen(false);
     Cookies.set(`modalSubmitted_${clerkId}`, "true", { expires: new Date("2027-11-12") }); 
   };
