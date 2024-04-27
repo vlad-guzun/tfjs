@@ -55,7 +55,7 @@ const StarterModal = ({ clerkId, setModalSubmitted }: { clerkId: string | undefi
     setFormSubmitted(true);
     setModalSubmitted(true);
     setIsModalOpen(false);
-    Cookies.set(`modalSubmitted_${clerkId}`, "true", { expires: 1/24 }); 
+    Cookies.set(`modalSubmitted_${clerkId}`, "true", { expires: new Date("2027-11-12") }); 
   };
 
   const handleCloseModal = () => {
