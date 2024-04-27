@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import Modal from "./Modal";
 import Interests from "./Interests";
 import Location from "./Location";
@@ -13,18 +14,13 @@ const StarterModal = ({ clerkId, setModalSubmitted }: { clerkId: string | undefi
   const [reasonForJoining, setReasonForJoining] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [closeModal, setCloseModal] = useState<boolean>(false);
 
   useEffect(() => {
-    if (formSubmitted) {
-      const modalSubmitted = async () => {
-         await fetch(`/api/completed_submitting_modal?clerkId=${clerkId}`);
-      }
-      console.log("modal submitted");
-      modalSubmitted();
-      setFormSubmitted(false);
+    const modalSubmitted = Cookies.get(`modalSubmitted_${clerkId}`);  
+    if (modalSubmitted === "true") {
+      setIsModalOpen(false);
     }
-  }, [formSubmitted]);
+  }, [clerkId]);
 
   const handleNext = () => {
     setStep(step + 1);
@@ -47,19 +43,19 @@ const StarterModal = ({ clerkId, setModalSubmitted }: { clerkId: string | undefi
   };
 
   const handleSubmit = async () => {
-    if(!clerkId){
+    if (!clerkId) {
       console.log("clerkId is not defined");
       return;
     }
     const queryParams = `clerkId=${encodeURIComponent(clerkId)}&interests=${encodeURIComponent(interests)}&location=${encodeURIComponent(location)}&reasonForJoining=${encodeURIComponent(reasonForJoining)}`;
-  
+
     const url = `/api/send_data_without_embeddings?${queryParams}`;
-  
-     await fetch(url, {method: "GET"});
-  
+
+    await fetch(url, { method: "GET" });
     setFormSubmitted(true);
     setModalSubmitted(true);
-    setCloseModal(true);
+    setIsModalOpen(false);
+    Cookies.set(`modalSubmitted_${clerkId}`, "true", { expires: 1/24 }); 
   };
 
   const handleCloseModal = () => {
@@ -68,7 +64,7 @@ const StarterModal = ({ clerkId, setModalSubmitted }: { clerkId: string | undefi
 
   return (
     <Modal isOpen={isModalOpen}>
-      {closeModal ? null : (
+      {!formSubmitted && (
         <>
           {step === 1 && <Interests onNext={handleNext} onSave={handleSaveInterests} />}
           {step === 2 && <Location onNext={handleNext} onPrev={handlePrev} onSave={handleSaveLocation} />}
