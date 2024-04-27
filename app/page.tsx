@@ -13,8 +13,8 @@ import Cookies from 'js-cookie';
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
-  const [modalSubmitted, setModalSubmitted] = useState<boolean>(false);
   const [userDoc, setUserDoc] = useState<any>();
+  const [useEffectExecuted, setUseEffectExecuted] = useState<boolean>(false);
     //sterge aici async dac treb, dar pana ce lasal, oricum nu 
     const {user,isLoaded} = useUser();
     useEffect(() => {
@@ -26,7 +26,7 @@ export default function Home() {
 
     useEffect(() => {
         const check_if_the_modal_is_submitted_and_get_the_full_user = async () => {
-          
+            if (!clerkId) {return;}
             const user = await fetch(`/api/user?clerkId=${clerkId}`);
             const data = await user.json();
             setUserDoc(data);
