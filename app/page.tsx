@@ -39,21 +39,28 @@ export default function Home() {
         const embed_user_interests_location_reason_for_joining = async () => {
           const { clerkId, interests, location, reasonForJoining } = userDoc || {};
           const model = await use.load();
-          const embeddings = await model.embed([interests, location, reasonForJoining]);
-          const embedded_interests = embeddings.arraySync()[0];
-          const embedded_location = embeddings.arraySync()[1];
-          const embedded_reason_for_joining = embeddings.arraySync()[2];
+
+          //eu is un geniu si am salvat aprox 7-8 sec , amu ii treb vro 15 sec in loc de minim 20
+          async function process_data_in_parallel(string: string, backend: string){
+              tf.setBackend(backend);              
+              const tensor = await model.embed(string);
+              return tensor.arraySync()[0];
+          }
+          const promises = [
+            process_data_in_parallel(interests, "webgl"),
+            process_data_in_parallel(location, "cpu"),
+            process_data_in_parallel(reasonForJoining, "webgl")
+          ]
+          const embedding_data = await Promise.all(promises);
           try{
-          const response = await fetch("/api/save_to_db_embedded_user", {
+          const response = await fetch("/api/save_to_db_embedded_user", { 
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
               clerkId,
-              embeddedInterests: embedded_interests,
-              embeddedLocation: embedded_location,
-              embeddedReasonForJoining: embedded_reason_for_joining,
+              embedding_data
             }),
           });
           if(response.ok){
@@ -68,7 +75,6 @@ export default function Home() {
         embed_user_interests_location_reason_for_joining();
       }
     }, [userDoc]);
-
 
   return (
     <div>
