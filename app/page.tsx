@@ -14,6 +14,7 @@ import Cookies from 'js-cookie';
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
   const [userDoc, setUserDoc] = useState<any>();
+  const [remommandedUsers, setRemommandedUsers] = useState<User_with_interests_location_reason[]>();
     //sterge aici async dac treb, dar pana ce lasal, oricum nu 
     const {user,isLoaded} = useUser();
     useEffect(() => {
@@ -66,7 +67,21 @@ export default function Home() {
           if(response.ok){
             const data = await response.json();
             console.log(data);
+            const response2 = await fetch("/api/get_recommendations", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                embedding_data
+              }),
+            });
+            const ids = await response2.json();
+            const response3 = await fetch(`/api/user/get_all_users?clerkIds=${ids.map((id: any) => id.clerkId).join(",")}`);
+            const users = await response3.json();
+            setRemommandedUsers(users);
           }
+          
           else console.log(response.statusText + "raspuns nehorosii");
           } catch (error) {
               console.error(error);
@@ -79,10 +94,19 @@ export default function Home() {
   return (
     <div>
       <StarterModal clerkId={clerkId}/>
-      <h1 className='text-4xl text-red-700'>{clerkId}</h1>
-      <h1 className='text-4xl text-red-700'>{userDoc?.location}</h1>
-      <h1 className='text-4xl text-red-700'>{userDoc?.interests}</h1>
-      <h1 className='text-4xl text-red-700'>{userDoc?.reasonForJoining}</h1>
+      {
+        remommandedUsers?.map((user) => (
+          <div key={user.clerkId}>
+            <h1>{user.username}</h1>
+            <p>{user.firstName}</p>
+            <p>{user.lastName}</p>
+            <p>{user.email}</p>
+            <p>{user.location}</p>
+            <p>{user.interests}</p>
+            <p>{user.reasonForJoining}</p>
+          </div>
+        ))
+      }
     </div>    
   );
 }
