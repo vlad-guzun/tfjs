@@ -22,9 +22,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>
-          <div className="w-full h-screen flex">
-            <div className="w-0 md:w-1/6 border-black lg:border-r hidden lg:block">
+        <body className={inter.className + " bg-black"} >
+          <div className="w-full min-h-screen flex">
+            <div className="w-0 md:w-1/6 border-white lg:border-r hidden lg:block">
               <div>
                 <Link href={"/"} >Home</Link>
               </div>
@@ -34,8 +34,8 @@ export default function RootLayout({
                 </SignedIn>
               </div>
             </div>
-            <div className="w-2/3 border-black lg:border-r">{children}</div>
-            <div className="w-0 md:w-1/6   lg:border-r flex flex-col justify-between">
+            <div className="w-2/3 border-white lg:border-r">{children}</div>
+            <div className="w-0 md:w-1/6 border lg:border-r hidden flex-col justify-between">
                 <div className="m-3 hidden lg:block"><Link href={"/similar"}>find someone</Link></div>
             </div>
           </div>

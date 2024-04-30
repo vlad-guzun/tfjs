@@ -8,6 +8,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import Image from 'next/image';
 
 
 
@@ -90,23 +91,26 @@ export default function Home() {
         embed_user_interests_location_reason_for_joining();
       }
     }, [userDoc]);
-
   return (
-    <div>
-      <StarterModal clerkId={clerkId}/>
-      {
-        remommandedUsers?.map((user) => (
-          <div key={user.clerkId}>
-            <h1>{user.username}</h1>
-            <p>{user.firstName}</p>
-            <p>{user.lastName}</p>
-            <p>{user.email}</p>
-            <p>{user.location}</p>
-            <p>{user.interests}</p>
-            <p>{user.reasonForJoining}</p>
-          </div>
-        ))
-      }
-    </div>    
+    <div className="grid grid-cols-1 ml-[60px] gap-10 justify-center md:flex md:flex-wrap md:gap-[120px] mt-9">
+  <StarterModal clerkId={clerkId}/>
+  {
+    remommandedUsers?.map((recommended_user) => (
+      <div key={recommended_user.clerkId} className="flex justify-center items-center w-[350px] h-[200px] bg-black border border-white rounded-lg relative">
+        <div className="absolute top-0 left-0 transform -rotate-20 origin-top-left">
+          <p className="text-sm text-white">{recommended_user.location}</p>
+        </div>
+        <div className="absolute bottom-0 right-0 transform rotate-20 origin-bottom-right">
+          <h3 className="text-xl text-white">{recommended_user.username}</h3>
+        </div>
+        <div className="flex items-center justify-center">
+          <Image src={recommended_user.photo} className="rounded-full border-2 border-white" width={150} height={150} alt="user"/>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
   );
+
 }

@@ -21,8 +21,8 @@ export async function POST(req: Request) {
             $vectorSearch: {
                 queryVector: embedded_interests,
                 path: "embeddedInterests",
-                numCandidates: 5,
-                limit: 3,
+                numCandidates: 7,
+                limit: 4,
                 index: "default"    
             },
         },
