@@ -25,10 +25,10 @@ const CheckDetails = ({
       <p className="text-white mb-4">Location: {location}</p>
       <p className="text-white mb-4">Reason for Joining: {reasonForJoining}</p>
       <div className="flex justify-between">
-        <Button className="mt-8 mr-4 bg-black text-white" variant="outline" size="icon" onClick={onPrev}>
+        <Button className="mt-8 mr-4 bg-black text-white border-slate-700" variant="outline" size="icon" onClick={onPrev}>
           <ChevronLeft />
         </Button>
-        <Button className="mt-8 px-8 bg-black border border-white hover:bg-white hover:text-black" size="icon" onClick={() => { onSubmit(); onClose(); }}>
+        <Button className="mt-8 px-8 bg-black border border-slate-700 hover:bg-white hover:text-black " size="icon" onClick={() => { onSubmit(); onClose(); }}>
           Search
         </Button>
       </div>

@@ -5,6 +5,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import {dark} from "@clerk/themes";
+
+
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,21 +25,23 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className + " bg-black"} >
-          <div className="w-full min-h-screen flex">
-            <div className="w-0 md:w-1/6 border-white lg:border-r hidden lg:block">
-              <div>
-                <Link href={"/"} >Home</Link>
+        <body className="bg-black">
+          <div className="w-full min-h-screen flex flex-col lg:flex-row">
+            <div className="w-full lg:w-1/6 border-slate-800 lg:border-r lg:block hidden">
+              <div className="p-3">
+                <Link href={"/"}>Home</Link>
               </div>
-              <div>
+              <div className="p-3">
                 <SignedIn>
                   <UserButton />
                 </SignedIn>
               </div>
             </div>
-            <div className="w-2/3 border-white lg:border-r">{children}</div>
-            <div className="w-0 md:w-1/6 border lg:border-r hidden flex-col justify-between">
-                <div className="m-3 hidden lg:block"><Link href={"/similar"}>find someone</Link></div>
+            <div className="w-full lg:w-2/3 border-slate-800 lg:border-r">{children}</div>
+            <div className="w-full lg:w-1/6">
+              <div className="p-3">
+                <Link href={"/similar"}>Find someone</Link>
+              </div>
             </div>
           </div>
         </body>
