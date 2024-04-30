@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import { Skeleton } from "@/components/ui/skeleton";
-
+ 
 
 
 export default function Home() {
@@ -29,9 +29,11 @@ export default function Home() {
     useEffect(() => {
         const check_if_the_modal_is_submitted_and_get_the_full_user = async () => {
             if (!clerkId) {return;}
-            const user = await fetch(`/api/user?clerkId=${clerkId}`); 
-            const data = await user.json();
-            setUserDoc(data);
+            else {
+              const user = await fetch(`/api/user?clerkId=${clerkId}`); 
+              const data = await user.json();
+              setUserDoc(data);
+            }
             
         }
         check_if_the_modal_is_submitted_and_get_the_full_user();
@@ -68,7 +70,6 @@ export default function Home() {
           });
           if(response.ok){
             const data = await response.json();
-            console.log(data);
             const response2 = await fetch("/api/get_recommendations", {
               method: "POST",
               headers: {
