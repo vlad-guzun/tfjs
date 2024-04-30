@@ -29,7 +29,7 @@ export default function Home() {
     useEffect(() => {
         const check_if_the_modal_is_submitted_and_get_the_full_user = async () => {
             if (!clerkId) {return;}
-            const user = await fetch(`/api/user?clerkId=${clerkId}`);
+            const user = await fetch(`/api/user?clerkId=${clerkId}`); 
             const data = await user.json();
             setUserDoc(data);
             
