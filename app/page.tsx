@@ -10,6 +10,9 @@ import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import Image from 'next/image';
 import { Skeleton } from "@/components/ui/skeleton";
+import {  Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
  
 
 
@@ -100,21 +103,28 @@ export default function Home() {
         <div className="flex flex-wrap justify-center w-full">
           {remommandedUsers ? (
             remommandedUsers.map((recommended_user, index) => (
-              <div key={index} className="flex justify-center items-center w-72 h-64 bg-black border border-slate-700 rounded-lg relative mb-6 mr-6">
-                <div className="absolute top-0 left-0 transform -rotate-20 origin-top-left">
-                  <p className="text-sm text-white">{recommended_user.location}</p>
+              <div key={index} className="mt-5 flex flex-col items-center justify-center mb-1 hover:border hover:border-slate-800">
+                <div className="flex justify-center items-center w-72 h-[140px] bg-black rounded-lg relative mb-6 mr-6">
+                  <div className="flex items-center justify-center relative">
+                    <Image src={recommended_user.photo} className="mt-4 rounded-full border-2 border-slate-700" width={150} height={150} alt="user" />
+                  </div>
                 </div>
-                <div className="absolute bottom-0 right-0 transform rotate-20 origin-bottom-right">
-                  <h3 className="text-xl text-white">{recommended_user.username}</h3>
-                </div>
-                <div className="flex items-center justify-center">
-                  <Image src={recommended_user.photo} className="rounded-full border-2 border-slate-700" width={150} height={150} alt="user" />
-                </div>
+                <Popover>
+                  <PopoverTrigger className="border border-slate-800 text-white px-2 py-1 rounded-2xl hover:bg-white hover:text-black mb-[150px]">Choices</PopoverTrigger>
+                  <PopoverContent className="border-slate-800 bg-black text-white flex flex-col items-center gap-4 mt-2">
+                    <h3 className="text-center text-white mb-3">{recommended_user.username}</h3>
+                    <div className="border-slate-800 bg-black text-white flex gap-4">
+                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"><Link href={`/profile/${recommended_user.username}`}>Look</Link></Button>
+                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800" onClick={() => console.log("followed")}>Follow</Button>
+                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800">Message</Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             ))
           ) : (
             Array.from({ length: 11 }, (_, index) => (
-              <div key={index} className="flex justify-center items-center w-72 h-64 bg-black  rounded-lg relative mb-6 mr-6">
+              <div key={index} className="flex justify-center items-center w-72 h-64 bg-black rounded-lg relative mb-6 mr-6">
                 <Skeleton className="w-full h-full rounded-lg bg-gray-800 bg-opacity-45" />
               </div>
             ))
