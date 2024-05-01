@@ -37,4 +37,5 @@ declare type movie_with_embedding = {
     interests: string,
     location: string,
     reasonForJoining: string,
+    following?: string[],
   }

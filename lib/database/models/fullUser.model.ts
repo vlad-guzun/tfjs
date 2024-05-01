@@ -40,6 +40,10 @@ const FullUserSchema = new Schema({
         type: String,
         required: true,
     },
+    following: {
+        type: [String], // array of clerkIds 
+    },
+    
 });
 
 const FullUser = models?.FullUser || model("FullUser", FullUserSchema);
