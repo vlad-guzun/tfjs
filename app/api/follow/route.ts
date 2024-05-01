@@ -11,7 +11,7 @@ export async function PUT(req: Request){
     const find_user = await FullUser.findOne({clerkId: clerkId});
     const {_id} = find_user;
 
-    const user = await FullUser.findOneAndUpdate({_id}, {$push: {followers: user_to_follow}}, {new: true});
+    const user = await FullUser.findOneAndUpdate({_id}, {$push: {following: user_to_follow}}, {new: true});
 
     return NextResponse.json({user});
 }

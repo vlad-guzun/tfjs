@@ -122,6 +122,25 @@ export default function Home() {
       }else {console.log("User already followed"); Cookies.set(`user_followed${clerkId}`, "true");}
     };
 
+    const handleUnfollow = async(clerkId: string | undefined, to_follow: string) => {
+      const response = await fetch("/api/unfollow",{
+        method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                clerkId,
+                user_to_follow: to_follow,
+              }),
+      })
+      if(response.ok){
+        const data = await response.json();
+        console.log(data);
+
+      }else console.log("eroare");
+    }
+
+
   return (
     <div className="grid grid-cols-1 gap-10 mt-9">
       <StarterModal clerkId={clerkId} />
@@ -142,6 +161,7 @@ export default function Home() {
                     <div className="border-slate-800 bg-black text-white flex gap-4">
                       <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"><Link href={`/profile/${recommended_user.username}`}>Look</Link></Button>
                       <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800" onClick={() => handleFollow(clerkId,recommended_user.clerkId)}>Follow</Button>
+                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800" onClick={() => handleUnfollow(clerkId,recommended_user.clerkId)}>unfollow</Button>
                       <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800">Message</Button>
                     </div>
                   </PopoverContent>
