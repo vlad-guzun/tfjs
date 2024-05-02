@@ -3,10 +3,7 @@ import * as React from "react"
 import * as tf from "@tensorflow/tfjs";
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import {SendHorizontal} from 'lucide-react';
 import { Eye } from 'lucide-react';
-import { UserPlus  } from 'lucide-react';
-import { UserMinus } from 'lucide-react';
 import StarterModal from "@/components/StarterModal";
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
@@ -15,8 +12,21 @@ import Image from 'next/image';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Plane, UserPlus, UserMinus, X, SendHorizontal } from 'lucide-react';
 import Link from "next/link";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
@@ -200,9 +210,21 @@ export default function Home() {
                       >
                         {followStatuses[recommended_user.clerkId] === "follow" ? <UserPlus /> : <UserMinus />}
                       </Button>
-                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"><Link href={`/profile/${recommended_user.username}`}><SendHorizontal> Message</SendHorizontal></Link></Button>
-
-                      
+                      <AlertDialog>
+                        <AlertDialogTrigger className="bg-black text-white hover:bg-white hover:text-black px-[10px] py-[7px] rounded-lg border border-slate-800"><SendHorizontal /></AlertDialogTrigger>
+                        <AlertDialogContent className="bg-black text-white border border-slate-800">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Send a quick message to <span className="text-slate-400">{recommended_user.username}</span></AlertDialogTitle>
+                            <AlertDialogDescription>
+                              <Textarea className="bg-black text-white border border-slate-700 resize-none"/>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="bg-black text-white border border-slate-800"><X /></AlertDialogCancel>
+                            <AlertDialogAction className="bg-black text-white border border-slate-800 hover:bg-white hover:text-black"><Plane /></AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </PopoverContent>
                 </Popover>
