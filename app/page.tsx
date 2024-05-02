@@ -1,7 +1,12 @@
 "use client";
-require("@tensorflow/tfjs");
+import * as React from "react"
 import * as tf from "@tensorflow/tfjs";
-import * as use from "@tensorflow-models/universal-sentence-encoder";
+import * as PopoverPrimitive from "@radix-ui/react-popover"
+import { HiOutlineDotsHorizontal } from "react-icons/hi";
+import {SendHorizontal} from 'lucide-react';
+import { Eye } from 'lucide-react';
+import { UserPlus  } from 'lucide-react';
+import { UserMinus } from 'lucide-react';
 import StarterModal from "@/components/StarterModal";
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
@@ -11,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import * as use from "@tensorflow-models/universal-sentence-encoder";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
@@ -182,19 +188,21 @@ export default function Home() {
                     <Image src={recommended_user.photo} className="mt-4 rounded-full border-2 border-slate-700" width={150} height={150} alt="user" />
                   </div>
                 </div>
-                <Popover>
-                  <PopoverTrigger className="border border-slate-800 text-white px-2 py-1 rounded-2xl hover:bg-white hover:text-black mb-[150px]">Choices</PopoverTrigger>
+                <Popover> {/*de schimbat in vrun icon*/}
+                  <PopoverTrigger className=" text-white px-2 py-1 rounded-2xl hover:bg-white hover:text-black mb-[150px]"><HiOutlineDotsHorizontal></HiOutlineDotsHorizontal></PopoverTrigger>
                   <PopoverContent className="border-slate-800 bg-black text-white flex flex-col items-center gap-4 mt-2">
                     <h3 className="text-center text-white mb-3">{recommended_user.username}</h3>
                     <div className="border-slate-800 bg-black text-white flex gap-4">
-                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"><Link href={`/profile/${recommended_user.username}`}>Look</Link></Button>
+                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"><Link href={`/profile/${recommended_user.username}`}><Eye /></Link></Button>
                       <Button
                         className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"
                         onClick={() => followStatuses[recommended_user.clerkId] === "follow" ? handleFollow(clerkId, recommended_user.clerkId) : handleUnfollow(clerkId, recommended_user.clerkId)}
                       >
-                        {followStatuses[recommended_user.clerkId] === "follow" ? "Follow" : "Unfollow"}
+                        {followStatuses[recommended_user.clerkId] === "follow" ? <UserPlus /> : <UserMinus />}
                       </Button>
-                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800">Message</Button>
+                      <Button className="w-full hover:bg-white hover:text-black bg-black border border-slate-800"><Link href={`/profile/${recommended_user.username}`}><SendHorizontal> Message</SendHorizontal></Link></Button>
+
+                      
                     </div>
                   </PopoverContent>
                 </Popover>
