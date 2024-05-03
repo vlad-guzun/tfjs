@@ -210,21 +210,7 @@ export default function Home() {
                       >
                         {followStatuses[recommended_user.clerkId] === "follow" ? <UserPlus /> : <UserMinus />}
                       </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger className="bg-black text-white hover:bg-white hover:text-black px-[10px] py-[7px] rounded-lg border border-slate-800"><SendHorizontal /></AlertDialogTrigger>
-                        <AlertDialogContent className="bg-black text-white border border-slate-800">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Send a quick message to <span className="text-slate-400">{recommended_user.username}</span></AlertDialogTitle>
-                            <AlertDialogDescription>
-                              <Textarea className="bg-black text-white border border-slate-700 resize-none"/>
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="bg-black text-white border border-slate-800"><X /></AlertDialogCancel>
-                            <AlertDialogAction className="bg-black text-white border border-slate-800 hover:bg-white hover:text-black"><Plane /></AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                      
                     </div>
                   </PopoverContent>
                 </Popover>

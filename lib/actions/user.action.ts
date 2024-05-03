@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/connectToDatabase";
+import FullUser from "../database/models/fullUser.model";
 
 export async function createUser(user: CreateUserParams) {
   try {
@@ -61,6 +62,20 @@ export async function deleteUser(clerkId: string) {
     revalidatePath("/");
 
     return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getFullUserByUsername(username: string) {
+  try {
+    await connectToDatabase();
+
+    const fullUser = await FullUser.findOne({ username });
+
+    if (!username) throw new Error("User not found");
+
+    return JSON.parse(JSON.stringify(fullUser));
   } catch (error) {
     console.log(error);
   }
