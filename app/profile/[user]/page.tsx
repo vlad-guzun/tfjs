@@ -11,7 +11,6 @@ const Profile = ({params: {user}}: any) => {
   useEffect(() => {
     const fetchUser = async () => {
       const userProfile = await getFullUserByUsername(user);
-      console.log(userProfile);
       setUserProfile(userProfile);
     };
     fetchUser();

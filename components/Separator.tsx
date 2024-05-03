@@ -67,7 +67,7 @@ export function SeparatorForProfile({ userProfile }: { userProfile: User_with_in
     <div className="flex flex-col items-center mt-56 mx-24">
       <div className="w-70p space-y-1">
         <div className="flex flex-col items-center justify-center gap-3">
-          <Image src={userProfile?.photo} width={200} height={200} alt={userProfile?.clerkId} className="rounded-full" />
+          <Image src={userProfile?.photo} width={200} height={200} alt={"img"} className="rounded-full" />
           <h4 className="text-lg text-white font-medium leading-none">{userProfile?.username}</h4>
         </div>
       </div>

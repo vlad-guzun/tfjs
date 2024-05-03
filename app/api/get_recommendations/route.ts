@@ -1,10 +1,11 @@
+import FullUser from "@/lib/database/models/fullUser.model";
 import { MongoClient } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
     const data = await req.json();
 
-    const {embedding_data} = data;
+    const {embedding_data,clerkId} = data;
 
     const embedded_interests: number[] = embedding_data[0];
 
@@ -21,8 +22,8 @@ export async function POST(req: Request) {
             $vectorSearch: {
                 queryVector: embedded_interests,
                 path: "embeddedInterests",
-                numCandidates: 7,
-                limit: 4,
+                numCandidates: 10,
+                limit: 7,
                 index: "default"    
             },
         },
@@ -34,8 +35,10 @@ export async function POST(req: Request) {
         }
     ]).toArray();
 
+    const docs_without_me = documents.filter((doc) => doc.clerkId !== clerkId);
+
     await client.close();
 
 
-    return NextResponse.json(documents);
+    return NextResponse.json(docs_without_me);
 }

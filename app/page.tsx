@@ -15,18 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Plane, UserPlus, UserMinus, X, SendHorizontal } from 'lucide-react';
 import Link from "next/link";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Textarea } from "@/components/ui/textarea";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
@@ -92,7 +80,8 @@ export default function Home() {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                embedding_data
+                embedding_data,
+                clerkId,
               }),
             });
 
