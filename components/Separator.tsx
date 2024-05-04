@@ -3,8 +3,8 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import { useUser } from '@clerk/nextjs';
-import { SendHorizonal, UserMinus, UserPlus } from "lucide-react";
+import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
+import { Cog, SendHorizonal, Settings, User, UserMinus, UserPlus } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function SeparatorForProfile({ userProfile }: { userProfile: User_with_interests_location_reason }) {
@@ -78,6 +78,7 @@ export function SeparatorForProfile({ userProfile }: { userProfile: User_with_in
         <div className="text-slate-400">{userProfile?.location}</div>
         <Separator orientation="vertical" className="h-5 border border-slate-700" />
         <div className="text-slate-400">{userProfile?.interests}</div>
+        
       </div>
       <div className="flex gap-4 items-center justify-center">
         {followStatus === "follow" ? (

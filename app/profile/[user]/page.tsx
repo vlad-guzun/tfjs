@@ -21,4 +21,4 @@ const Profile = ({params: {user}}: any) => {
   )
 }
 
-export default Profile
+export default Profile;

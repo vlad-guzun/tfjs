@@ -170,7 +170,7 @@ export default function Home() {
   };
 
 
-  const min = 2;
+  const min = 5;
   const max = 8;
   const randomLength = Math.floor(Math.random() * (max - min + 1)) + min;
 

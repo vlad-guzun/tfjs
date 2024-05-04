@@ -6,6 +6,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import {dark} from "@clerk/themes";
+import { Home } from "lucide-react";
+import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuDemo } from "@/components/Dropdown";
 
 
 
@@ -23,19 +26,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{
+      variables: {
+        colorText: "white",
+        colorInputText: "white",
+        colorTextSecondary: "white",
+        colorDanger: "red",
+        colorSuccess: "white",
+        colorInputBackground: "black",
+        colorBackground: "black",
+        colorTextOnPrimaryBackground: "white",
+        colorNeutral: "white",
+        colorPrimary: "white",
+        colorShimmer: "white",
+        colorWarning: "white",
+        
+      }
+    }}>
       <html lang="en">
         <body className="bg-black">
           <div className="w-full min-h-screen flex flex-col lg:flex-row">
             <div className="w-full lg:w-1/6 border-slate-800 lg:border-r lg:block hidden">
               <div className="p-3">
-                <Link href={"/"}>Home</Link>
+                <Link href={"/"} className="text-white hover:text-slate-700"> <Home /></Link>
               </div>
               <div className="p-3">
-                <SignedIn>
+                {/* <SignedIn>
                   <UserButton />
-                </SignedIn>
+                </SignedIn> */}
               </div>
+              <DropdownMenuDemo />
             </div>
             <div className="w-full lg:w-2/3 border-slate-800 lg:border-r">{children}</div>
             <div className="w-full lg:w-1/6">

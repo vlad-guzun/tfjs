@@ -80,3 +80,34 @@ export async function getFullUserByUsername(username: string) {
     console.log(error);
   }
 }
+
+export async function getFullUserByClerkId(clerkId: string) {
+  try {
+    await connectToDatabase();
+
+    const fullUser = await FullUser.findOne({ clerkId });
+
+    if (!clerkId) throw new Error("User not found");
+
+    return JSON.parse(JSON.stringify(fullUser));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function getUserFollowings(clerkId: string) {
+  try{
+
+    await connectToDatabase();
+    
+    const user = await FullUser.findOne({clerkId});
+    if(!user) throw new Error("User not found");
+    
+    const followed_users = await FullUser.find({ clerkId: {$in: user.following}});
+    
+    return JSON.parse(JSON.stringify(followed_users));
+
+  }catch(error){
+    console.log(error);
+  }
+}
