@@ -10,7 +10,7 @@ const Followings = ({followings}: {followings: User_with_interests_location_reas
       <h1 className=" text-center text-3xl font-sans mt-16 text-slate-500">Following</h1>
                 {followings?.map((following) =>  {
                     return (
-                      <div className="flex flex-col items-center mt-56 mx-24">
+                      <div key={following.clerkId} className="flex flex-col items-center mt-56 mx-24">
       <div className="w-70p space-y-1">
         <div className="flex flex-col items-center justify-center gap-3">
           <Link href={`/profile/${following.username}`}>
