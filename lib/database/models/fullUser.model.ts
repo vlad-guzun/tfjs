@@ -43,7 +43,14 @@ const FullUserSchema = new Schema({
     following: {
         type: [String], // array of clerkIds 
     },
-    
+    feedback: {
+      type: [
+        {
+          recipient: String,
+          sentiment: Number
+        }
+      ]
+    }
 });
 
 const FullUser = models?.FullUser || model("FullUser", FullUserSchema);

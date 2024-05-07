@@ -3,7 +3,7 @@ import * as React from "react"
 import * as tf from "@tensorflow/tfjs";
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
-import { Eye } from 'lucide-react';
+import { Eye, Heart, HeartCrack } from 'lucide-react';
 import StarterModal from "@/components/StarterModal";
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
@@ -15,12 +15,16 @@ import { Button } from "@/components/ui/button";
 import { Plane, UserPlus, UserMinus, X, SendHorizontal } from 'lucide-react';
 import Link from "next/link";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
   const [userDoc, setUserDoc] = useState<any>();
   const [recommendedUsers, setRecommendedUsers] = useState<User_with_interests_location_reason[]>();
   const [followStatuses, setFollowStatuses] = useState<Record<string, string>>({});
+  const [feedback, setFeedback] = useState<string>("");
+  const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
 
   const { user, isLoaded } = useUser();
 
@@ -169,6 +173,34 @@ export default function Home() {
     }
   };
 
+  const send_feedback = async (sender_of_feedback: string | undefined, recipient_of_feedback: string, feedback_content: string) => {
+    const response = await fetch("/api/send_feedback",{
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sender_of_feedback,
+        recipient_of_feedback,
+        feedback_content
+      }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      Cookies.set(`feedback_${sender_of_feedback}_${recipient_of_feedback}`, "true");
+      setFeedbackSent(true);
+      setFeedback("");
+      console.log(data);
+    } else {
+      console.log("eroare");
+    }
+    
+  }
+
+  useEffect(() => {
+    setFeedbackSent(false);
+  },[feedbackSent]);
+
 
   const min = 5;
   const max = 8;
@@ -199,7 +231,23 @@ export default function Home() {
                       >
                         {followStatuses[recommended_user.clerkId] === "follow" ? <UserPlus /> : <UserMinus />}
                       </Button>
-                      
+                          <div>
+                            {!Cookies.get(`feedback_${clerkId}_${recommended_user.clerkId}`) && (
+
+                              <Popover>
+                                <PopoverTrigger>
+                                  <div className="flex gap-2 border border-slate-800 px-2 py-[6px] rounded-md hover:bg-white hover:text-black">
+                                  <Heart className="text-red-800"/> <HeartCrack className="text-slate-800"/>
+                                  </div>
+                                </PopoverTrigger>
+                                  <PopoverContent className="bg-black text-white border border-slate-800">
+                                    <Label className="text-white">What do you think about <span className="text-slate-400">{recommended_user.username}</span>?</Label>
+                                    <Textarea className="bg-black text-white border border-slate-800" value={feedback} onChange={e => setFeedback(e.target.value)}/>
+                                    <Button onClick={() => send_feedback(clerkId,recommended_user.clerkId,feedback)} className="ml-[200px] mt-[6px] bg-black text-white hover:text-black hover:bg-white"><SendHorizontal /></Button>
+                                  </PopoverContent> 
+                              </Popover>
+                            )}
+                          </div>
                     </div>
                   </PopoverContent>
                 </Popover>

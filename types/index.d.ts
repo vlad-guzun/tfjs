@@ -38,4 +38,8 @@ declare type movie_with_embedding = {
     location: string,
     reasonForJoining: string,
     following?: string[],
+    feedback?: {
+      recipient: string,
+      sentiment: number
+    }[]
   }
