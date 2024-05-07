@@ -202,8 +202,8 @@ export default function Home() {
   },[feedbackSent]);
 
 
-  const min = 5;
-  const max = 8;
+  const min = 20;
+  const max = 30;
   const randomLength = Math.floor(Math.random() * (max - min + 1)) + min;
 
   return (
