@@ -48,7 +48,7 @@ export default function RootLayout({
           <div className="w-full min-h-screen flex flex-col lg:flex-row">
             <div className="w-full lg:w-1/6 border-slate-800 lg:border-r lg:block hidden">
               <div className="p-3">
-                <Link href={"/"} className="text-white hover:text-slate-700"> <Home /></Link>
+                <Link href={"/"} className="text-white hover:text-slate-700"></Link>
               </div>
               <div className="p-3">
                 {/* <SignedIn>
@@ -57,7 +57,7 @@ export default function RootLayout({
               </div>
               <DropdownMenuDemo />
             </div>
-            <div className="w-full lg:w-2/3 border-slate-800 lg:border-r">{children}</div>
+            <div className="w-full lg:w-2/3 border-slate-800 lg:border-r"><div className="block lg:hidden"><DropdownMenuDemo /></div>{children}</div>
             <div className="w-full lg:w-1/6">
               <div className="p-3">
                 <Link href={"/similar"}>Find someone</Link>

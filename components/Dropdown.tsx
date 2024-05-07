@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useUser } from "@clerk/nextjs"
-import { CircleUserRound, Ellipsis, EllipsisVertical, Rss, Send, UsersRound } from "lucide-react"
+import { CircleUserRound, Ellipsis, EllipsisVertical, Home, Rss, Send, UsersRound } from "lucide-react"
 import Link from "next/link";
 
 export function DropdownMenuDemo() {
@@ -28,6 +28,9 @@ export function DropdownMenuDemo() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className=" text-white bg-black border border-slate-700 w-[30px]">
         <DropdownMenuGroup>
+          <DropdownMenuItem>
+            <Link href={`/`}><Home /></Link>
+          </DropdownMenuItem>
           <DropdownMenuItem>
             <Link href={`/myprofile/${user?.user?.username}`}><CircleUserRound /></Link>
           </DropdownMenuItem>
