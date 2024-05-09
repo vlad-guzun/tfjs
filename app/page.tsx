@@ -18,6 +18,7 @@ import * as use from "@tensorflow-models/universal-sentence-encoder";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
+import { MdOutlineInterests } from "react-icons/md";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();

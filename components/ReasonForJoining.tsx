@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Label } from "./ui/label";
+import { TbHeartQuestion } from "react-icons/tb";
+import Hover from "./Hover";
 
 const ReasonForJoining = ({
   onNext,
@@ -21,7 +24,7 @@ const ReasonForJoining = ({
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4 text-white">Reason for Joining</h2>
+      <div className="flex items-center mb-2"><Hover optionContent="Be descriptive! ex: I'm here to create a team and discover hidden gems in the city." completeOption="Why decided joining" textColor="text-slate-400"></Hover> <TbHeartQuestion className="text-slate-400" size={30} /></div>
       <Textarea
         rows={8}
         className="bg-black text-white font-extrabold border-slate-700"
