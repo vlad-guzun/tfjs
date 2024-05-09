@@ -213,7 +213,7 @@ export default function Home() {
         <div className="flex flex-wrap justify-center w-full">
           {recommendedUsers ? (
             recommendedUsers.map((recommended_user, index) => (
-              <div key={index} className="mt-5 flex flex-col items-center justify-center mb-1 hover:border hover:border-slate-800">
+              <div key={index} className="mt-5 flex flex-col items-center justify-center mb-1 ">
                 <div className="flex justify-center items-center w-72 h-[140px] bg-black rounded-lg relative mb-6 mr-6">
                   <div className="flex items-center justify-center relative">
                     <Image src={recommended_user.photo} className="mt-4 rounded-full border-2 border-slate-700" width={150} height={150} alt="user" />
