@@ -9,6 +9,7 @@ import {dark} from "@clerk/themes";
 import { Home } from "lucide-react";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuDemo } from "@/components/Dropdown";
+import { Toaster } from "@/components/ui/toaster"
 
 
 
@@ -58,6 +59,7 @@ export default function RootLayout({
               <div className="sticky top-0"><DropdownMenuDemo /></div>
             </div>
             <div className="w-full lg:w-2/3 border-slate-800 lg:border-r"><div className="block lg:hidden top-0 sticky"><DropdownMenuDemo /></div>{children}</div>
+            <Toaster />
             <div className="w-full lg:w-1/6">
               <div className="p-3">
                 <Link href={"/similar"}>Find someone</Link>

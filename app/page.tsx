@@ -17,6 +17,7 @@ import Link from "next/link";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
@@ -190,7 +191,16 @@ export default function Home() {
       Cookies.set(`feedback_${sender_of_feedback}_${recipient_of_feedback}`, "true");
       setFeedbackSent(true);
       setFeedback("");
-      console.log(data);
+      toast({
+        description: `You will see more users like this`,
+        style: {
+          backgroundColor: "black",
+          color: "white",
+          border: "1px slate-800 solid",
+          fill: "white",
+        
+        }
+      })
     } else {
       console.log("eroare");
     }
