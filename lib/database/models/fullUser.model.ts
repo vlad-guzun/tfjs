@@ -50,6 +50,14 @@ const FullUserSchema = new Schema({
           sentiment: Number
         }
       ]
+    },
+    text_posts: {
+      type: [
+        {
+          title: String,
+          description: String,
+        }
+      ]
     }
 });
 

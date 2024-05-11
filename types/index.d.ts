@@ -41,5 +41,9 @@ declare type movie_with_embedding = {
     feedback?: {
       recipient: string,
       sentiment: number
-    }[]
+    }[],
+    text_posts?: {
+      title: string,
+      description: string,
+    }[],
   }

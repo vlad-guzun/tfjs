@@ -12,10 +12,24 @@ import {
   import { Button } from "@/components/ui/button"
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
-import { Clapperboard, PencilLine, X } from "lucide-react"
+import { ALargeSmall, Clapperboard, PencilLine, Text, WholeWord, X } from "lucide-react"
 import { Label } from "./ui/label"
+import { FormEvent, useState } from "react"
+import { useUser } from "@clerk/nextjs"
+import { createTextPost } from "@/lib/actions/post.action"
   
   export function TextDialog() {
+
+    const [input,setInput] = useState<string>("");
+    const [textArea,setTextArea] = useState<string>("");
+    const user = useUser();
+
+    const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await createTextPost(input,textArea,user?.user?.id);
+      window.location.reload();
+    }
+
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
@@ -23,14 +37,19 @@ import { Label } from "./ui/label"
         </AlertDialogTrigger>
         <AlertDialogContent className="bg-black text-white border border-slate-700">
           <AlertDialogHeader>
-            <AlertDialogTitle><Input placeholder="title" className="bg-black text-white border border-slate-700"/></AlertDialogTitle>
+          <WholeWord />
+            <AlertDialogTitle>
+              <Input value={input} onChange={e => setInput(e.target.value)} placeholder="title" className="bg-black text-white border border-slate-700"/>
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              <Textarea className="bg-black text-white border border-slate-700" placeholder="Description of the title"/>
+              <Textarea value={textArea} onChange={e => setTextArea(e.target.value)} className="bg-black text-white border border-slate-700" placeholder="Description of the title"/>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-black text-white border border-slate-700">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-black text-white border border-slate-700 hover:bg-white hover:text-black">Post</AlertDialogAction>
+            <form onSubmit={handleSubmit}>
+              <AlertDialogCancel className="bg-black text-white border border-slate-700">Cancel</AlertDialogCancel>
+              <AlertDialogAction type="submit" className="bg-black text-white border border-slate-700 hover:bg-white hover:text-black">Post</AlertDialogAction>
+            </form>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
