@@ -26,4 +26,27 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       console.log(error);
     }
   }
+
+  export async function createVideoPost(title: string, url: string, clerkId: string | undefined) {
+    try{
   
+      await connectToDatabase();
+      
+      const user = await FullUser.findOne({clerkId});
+      if(!user) throw new Error("User not found");
+
+      const video_post = {
+        title: title,
+        url: url,
+      }
+
+      await user.video_posts.push(video_post);
+      await user.save();
+
+      return JSON.parse(JSON.stringify(user));
+      
+  
+    }catch(error){
+      console.log(error);
+    }
+  }

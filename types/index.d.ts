@@ -46,4 +46,8 @@ declare type movie_with_embedding = {
       title: string,
       description: string,
     }[],
+    video_posts?:{
+      title: string,
+      url: string,
+    }[],
   }

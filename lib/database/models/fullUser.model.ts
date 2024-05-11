@@ -58,6 +58,14 @@ const FullUserSchema = new Schema({
           description: String,
         }
       ]
+    },
+    video_posts: {
+      type: [
+        {
+          title: String,
+          url: String,
+        }
+      ]
     }
 });
 
