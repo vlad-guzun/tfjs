@@ -35,7 +35,7 @@ const CheckDetails = ({
           <ChevronLeft />
         </Button>
         <Button className="mt-8 px-8 bg-black border border-slate-700 hover:bg-white hover:text-black " size="icon" onClick={() => { onSubmit(); onClose(); toast({
-        description: `please wait while we search for a match for you...`,
+        description: `Please refresh the page if you don't see any results`,
         style: {
           backgroundColor: "black",
           color: "white",
