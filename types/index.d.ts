@@ -45,9 +45,28 @@ declare type movie_with_embedding = {
     text_posts?: {
       title: string,
       description: string,
+      profile_photo: string,
+      createdAt: Date
     }[],
     video_posts?:{
       title: string,
       url: string,
+      profile_photo: string,
+      createdAt: Date
     }[],
   }
+
+  declare type TextPostProps =  {
+    createdAt: string,
+    title: string,
+    description: string,
+    profile_photo: string,
+}
+
+declare type VideoPostProps = {
+    createdAt: string,
+    title: string,
+    url: string,
+    profile_photo: string,
+
+}

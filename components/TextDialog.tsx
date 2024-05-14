@@ -26,7 +26,7 @@ import { createTextPost } from "@/lib/actions/post.action"
 
     const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      await createTextPost(input,textArea,user?.user?.id);
+      await createTextPost(input,textArea,user?.user?.id,user?.user?.imageUrl);
       window.location.reload();
     }
 

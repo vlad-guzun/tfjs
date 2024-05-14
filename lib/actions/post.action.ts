@@ -3,7 +3,7 @@
 import { connectToDatabase } from "../database/connectToDatabase";
 import FullUser from "../database/models/fullUser.model";
 
-export async function createTextPost(input: string, textArea: string, clerkId: string | undefined) {
+export async function createTextPost(input: string, textArea: string, clerkId: string | undefined, profile_photo: string | undefined) {
     try{
   
       await connectToDatabase();
@@ -14,6 +14,7 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       const text_post = {
         title: input,
         description: textArea,
+        profile_photo: profile_photo
       }
 
       await user.text_posts.push(text_post);
@@ -27,7 +28,7 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
     }
   }
 
-  export async function createVideoPost(title: string, url: string, clerkId: string | undefined) {
+  export async function createVideoPost(title: string, url: string, clerkId: string | undefined, profile_photo: string | undefined) {
     try{
   
       await connectToDatabase();
@@ -38,6 +39,7 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       const video_post = {
         title: title,
         url: url,
+        profile_photo: profile_photo
       }
 
       await user.video_posts.push(video_post);

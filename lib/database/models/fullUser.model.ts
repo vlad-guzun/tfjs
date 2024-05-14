@@ -56,6 +56,11 @@ const FullUserSchema = new Schema({
         {
           title: String,
           description: String,
+          profile_photo: String,
+          createdAt: {
+            type: Date,
+            default: Date.now()
+          }
         }
       ]
     },
@@ -64,6 +69,11 @@ const FullUserSchema = new Schema({
         {
           title: String,
           url: String,
+          profile_photo: String,
+          createdAt: {
+            type: Date,
+            default: Date.now()
+          }
         }
       ]
     }

@@ -32,8 +32,7 @@ export function VideoDialog() {
       setShowModal(true);
       return;
     }
-    const videoPost = await createVideoPost(title, url, user?.user?.id);
-    console.log(videoPost);
+    await createVideoPost(title, url, user?.user?.id, user?.user?.imageUrl);
     window.location.reload();
   };
 

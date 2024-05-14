@@ -111,3 +111,54 @@ export async function getUserFollowings(clerkId: string) {
     console.log(error);
   }
 }
+
+export async function getAllTheFollowingsTextPosts(clerkId: string | undefined){
+  try{
+    
+    await connectToDatabase();
+
+    const user = await FullUser.findOne({clerkId});
+    if(!user) throw new Error("User not found");
+
+    const followed_users = await FullUser.find({ clerkId: {$in: user.following}});
+
+    const text_posts = followed_users.reduce((allPosts, followedUser) => {
+      allPosts.push(...followedUser.text_posts);
+      return allPosts;
+    }, []);
+
+    text_posts.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+
+    return JSON.parse(JSON.stringify(text_posts));
+
+  }catch(error){
+    console.log(error);
+  }
+}
+
+export async function getAllTheFollowingsVideoPosts(clerkId: string | undefined){
+  try{
+    
+    await connectToDatabase();
+
+    const user = await FullUser.findOne({clerkId});
+    if(!user) throw new Error("User not found");
+
+    const followed_users = await FullUser.find({ clerkId: {$in: user.following}});
+
+    const video_posts = followed_users.reduce((allPosts, followedUser) => {
+      allPosts.push(...followedUser.video_posts);
+      return allPosts;
+    }, []);
+
+    video_posts.sort((a:any, b:any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return JSON.parse(JSON.stringify(video_posts));
+
+  }
+
+  catch(error){
+    console.log(error);
+  }
+}
