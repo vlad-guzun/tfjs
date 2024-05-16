@@ -1,8 +1,10 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Heart } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import { getAllTheFollowingsTextPosts } from "@/lib/actions/user.action";
 
 const timeSince = (dateString: string): string => {
   const now = new Date();
@@ -15,10 +17,17 @@ const timeSince = (dateString: string): string => {
   else return "more than 1 day ago";
 }
 
-export function ScrollTextDemo({ user, textPosts }: { user: any, textPosts: TextPostProps[] }) {
+export function ScrollTextDemo() {
+  const [textPosts, setTextPosts] = useState<TextPostProps[]>([]);
+  const user = useUser();
   useEffect(() => {
-    console.log(user);
-    console.log(textPosts);
+    
+    const fetchTextPosts = async () => {
+      const text_posts = await getAllTheFollowingsTextPosts(user?.user?.id);
+      console.log(text_posts);
+      setTextPosts(text_posts);
+    }
+    fetchTextPosts();
   }, []);
 
   return (

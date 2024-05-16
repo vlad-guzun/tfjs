@@ -17,6 +17,7 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { ScrollTextDemo } from "./ScrollText";
 import { ScrollVideoDemo } from "./ScrollVideo";
+import { Play } from "lucide-react";
 
 export function SheetRight() {
     const user = useUser();
@@ -36,7 +37,7 @@ export function SheetRight() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-      <Button variant="outline"><div className="text-black">Video</div></Button>
+      <Button variant="outline" className="bg-black text-white hover:text-black hover:bg-white py-6 px-8"><div className="font-serif">Video<Play /></div></Button>
       </SheetTrigger>
       <SheetContent side={"right"} className="bg-black text-white border border-l-slate-800 border-t-slate-800">
         <ScrollVideoDemo user={user} videoPosts={videoPosts}/>

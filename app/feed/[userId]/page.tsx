@@ -4,16 +4,12 @@ import OptionModal from '@/components/OptionsModal';
 import { SheetLeft } from '@/components/SheetLeft';
 import { SheetRight } from '@/components/SheetRight';
 import { Button } from '@/components/ui/button';
-import { getAllTheFollowingsVideoPosts } from '@/lib/actions/user.action';
 import { useUser } from '@clerk/nextjs';
-import { Dot, PencilLine } from 'lucide-react';
-import  { useEffect, useState } from 'react';
-
-
+import { Dot } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const FeedPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
-
 
     return (
         <div className='text-white'>
@@ -21,9 +17,15 @@ const FeedPage = () => {
                 <Dot size={30}/> 
             </Button>
             {modalOpen && <OptionModal onClose={() => setModalOpen(false)} />}
-            <div className="h-screen flex items-center justify-center gap-5">
-                <SheetLeft />     
-                <SheetRight />                                              
+            <div className="h-screen flex flex-col items-center justify-center">
+                <div className="text-center mb-10">
+                    <h1 className="text-xl font-serif">What type of feed this time?</h1>
+                </div>
+                <div className="flex items-center justify-center gap-5">
+                    <SheetLeft />   
+                    or  
+                    <SheetRight />                                              
+                </div>
             </div>
         </div>
     );

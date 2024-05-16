@@ -16,6 +16,7 @@ import { getAllTheFollowingsTextPosts } from "@/lib/actions/user.action";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { ScrollTextDemo } from "./ScrollText";
+import { Type } from "lucide-react";
 
 export function SheetLeft() {
     const user = useUser();
@@ -34,10 +35,10 @@ export function SheetLeft() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-      <Button variant="outline"><div className="text-black">Text</div></Button>
+      <Button variant="outline" className="hover:bg-black hover:text-white text-black px-8 py-6"><div className="font-serif">Text <Type /></div></Button>
       </SheetTrigger>
       <SheetContent side={"left"} className="bg-black text-white border border-r-slate-700 border-l-slate-900 border-t-slate-900">
-        <ScrollTextDemo user={user} textPosts={textPosts}/>
+        <ScrollTextDemo/>
       </SheetContent>
     </Sheet>
   )
