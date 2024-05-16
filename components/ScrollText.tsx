@@ -33,7 +33,7 @@ export function ScrollTextDemo({ user, textPosts }: { user: any, textPosts: Text
           </div>
           <Separator className="my-2 border mt-4" style={{border: '1px solid #121212'}}/>
 
-          <Heart className="absolute bottom-0 right-0 mb-8 mr-2 text-red-500" size={24} />
+          <Heart className="absolute bottom-0 right-0 mb-8 mr-2 text-red-500" size={15} />
         </div>
         
       ))}
