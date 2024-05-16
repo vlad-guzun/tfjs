@@ -1,10 +1,10 @@
 "use client";
 
 import OptionModal from '@/components/OptionsModal';
-import { TextScrollBar } from '@/components/Scroll-bar-Text';
-import { VideosScrollBar } from '@/components/Scroll-bar-Videos';
+import { SheetLeft } from '@/components/SheetLeft';
+import { SheetRight } from '@/components/SheetRight';
 import { Button } from '@/components/ui/button';
-import {  getAllTheFollowingsTextPosts, getAllTheFollowingsVideoPosts } from '@/lib/actions/user.action';
+import { getAllTheFollowingsVideoPosts } from '@/lib/actions/user.action';
 import { useUser } from '@clerk/nextjs';
 import { Dot, PencilLine } from 'lucide-react';
 import  { useEffect, useState } from 'react';
@@ -13,21 +13,7 @@ import  { useEffect, useState } from 'react';
 
 const FeedPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const user = useUser();
-    const [textPosts, setTextPosts] = useState<TextPostProps[]>([]);
-    const [videoPosts, setVideoPosts] = useState<VideoPostProps[]>([]);
 
-    //AICI E PROBLEMA !!!!!!!!!!!!!!!!!!!!!!!!!!!! VEZ REZOLVA HUINEAUA!
-    useEffect(() => {
-        const fetchPosts = async () => {
-            const text_posts = await getAllTheFollowingsTextPosts(user?.user?.id);
-            const video_posts = await getAllTheFollowingsVideoPosts(user?.user?.id);
-            setTextPosts(text_posts);
-            setVideoPosts(video_posts);
-            console.log(text_posts, video_posts);
-        }
-        fetchPosts();
-    },[]); //NU MERGE DACA NU TE DUCI MAI INTAI PE PAGINA DE PROFILE SI DUPA DIN NOU AICI!!!!!!!!
 
     return (
         <div className='text-white'>
@@ -35,9 +21,9 @@ const FeedPage = () => {
                 <Dot size={30}/> 
             </Button>
             {modalOpen && <OptionModal onClose={() => setModalOpen(false)} />}
-            <div className="flex justify-center">
-                    <VideosScrollBar videos={videoPosts} user={user}/>
-                    <TextScrollBar text={textPosts} user={user}/>
+            <div className="h-screen flex items-center justify-center gap-5">
+                <SheetLeft />     
+                <SheetRight />                                              
             </div>
         </div>
     );
