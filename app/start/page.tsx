@@ -16,6 +16,7 @@ import {
     TooltipTrigger,
   } from "@/components/ui/tooltip"
 import Link from 'next/link';
+import { StartPopover } from '@/components/StartPopover';
 
 
 const StartPage = () => {
@@ -68,7 +69,7 @@ const StartPage = () => {
                     className='border-gray-700 bg-black w-[400px] font-serif'
                     value={inputValue}
                     onChange={handleInputChange}
-                    placeholder="Type here to generate embeddings..."
+                    placeholder="Type..."
                 />
             </div>
             <div className="flex justify-center mt-4 flex-wrap gap-7">
@@ -76,20 +77,7 @@ const StartPage = () => {
                     Array.from({ length: peoples.length }, (_, i) => <SkeletonDemo key={i} />)
                 ) : (
                     peoples.map((person) => (
-                        <TooltipProvider key={person.clerkId}>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <div key={person.clerkId} className='flex flex-col items-center justify-center m-2 gap-1'>
-                                        <Image src={person.photo} alt='Profile image' width={60} height={60} className="rounded-full" />
-                                        <p className="font-serif text-xs">{person.username}</p>
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent className='bg-black text-white border border-slate-800 shadow-[0_0_15px_rgba(255,255,255,0.2)]'>
-                                    <p>last online</p>
-                                    <Link href={`/myprofile`}><FaEye size={20}></FaEye></Link>
-                                </TooltipContent>   
-                            </Tooltip>
-                        </TooltipProvider>
+                        <StartPopover  key={person.clerkId} person={person} />
                     ))
                 )}
             </div>
