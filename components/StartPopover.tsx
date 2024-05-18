@@ -6,11 +6,12 @@ export function StartPopover({person}: {person: User_with_interests_location_rea
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Image src={person.photo} width={50} height={50} alt="img"/>
+        <Image src={person.photo} width={50} height={50} alt="img" className="rounded-md"/>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] h-[350px] p-0 overflow-hidden">
+      <PopoverContent 
+        className="w-[200px] h-[350px] p-0 overflow-hidden bg-black border-none">
         <StartScroll person={person}/>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

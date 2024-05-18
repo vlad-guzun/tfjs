@@ -6,14 +6,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { CiPlay1 } from "react-icons/ci";
 import { IoStopOutline } from "react-icons/io5";
 
-interface VideoPostProps {
-    url: string;
-    clerkId: string;
-}
 
-interface User_with_interests_location_reason {
-    clerkId: string;
-}
 
 interface VideoStyle {
     [url: string]: React.CSSProperties;
@@ -37,7 +30,7 @@ const VideoPlayer: React.FC<{ src: string; style: React.CSSProperties }> = ({ sr
 
     return (
         <div className="relative">
-            <video src={src} ref={videoRef} style={style} />
+            <video src={src} ref={videoRef} style={style} className="rounded-sm" />
             <button
                 onClick={togglePlay}
                 className="absolute right-2 bottom-2 p-1 rounded-full shadow-md"
@@ -69,20 +62,17 @@ export function StartScroll({ person }: { person: User_with_interests_location_r
             vid.src = video.url;
 
             vid.onloadedmetadata = () => {
-                // Check if video is portrait or landscape
                 if (vid.videoWidth > vid.videoHeight) {
-                    // Landscape
                     tempStyles[video.url] = {
                         objectFit: 'contain',
                         height: '100%',
                         width: '100%'
                     };
                 } else {
-                    // Portrait
                     tempStyles[video.url] = {
                         objectFit: 'cover',
                         width: '100%',
-                        height: '100%' // Adjust if necessary
+                        height: '100%' 
                     };
                 }
                 setVideoStyles((prevStyles) => ({ ...prevStyles, ...tempStyles }));
@@ -91,12 +81,11 @@ export function StartScroll({ person }: { person: User_with_interests_location_r
     };
 
     return (
-        <ScrollArea className="h-full w-full rounded-md border border-slate-800">
+        <ScrollArea className="h-full w-full rounded-md ">
             <div className="text-black relative">
                 {videos.map((video) => (
                     <div key={video.url} className="relative mb-4">
-                        <VideoPlayer src={video.url} style={videoStyles[video.url] || { width: '100%', height: '100%' }} />
-                        <Separator />
+                        <VideoPlayer src={video.url} style={videoStyles[video.url] || { width: '100%', height: '100%' }}  />
                         <Heart className="absolute text-red-500 right-2 bottom-[140px] text-2xl" />
                     </div>
                 ))}
