@@ -76,7 +76,7 @@ const StartPage = () => {
                     Array.from({ length: peoples.length }, (_, i) => <SkeletonDemo key={i} />)
                 ) : (
                     peoples.map((person) => (
-                        <TooltipProvider>
+                        <TooltipProvider key={person.clerkId}>
                             <Tooltip>
                                 <TooltipTrigger>
                                     <div key={person.clerkId} className='flex flex-col items-center justify-center m-2 gap-1'>
