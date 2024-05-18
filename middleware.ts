@@ -4,7 +4,6 @@ import {
   } from '@clerk/nextjs/server';
    
   const isProtectedRoute = createRouteMatcher([
-    "/",
     "/feed(/.*)",
   ]);
    

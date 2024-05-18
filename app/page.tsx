@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { toast } from "@/components/ui/use-toast";
 import { MdOutlineInterests } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [clerkId, setClerkId] = useState<string>();
@@ -29,8 +30,13 @@ export default function Home() {
   const [feedbackSent, setFeedbackSent] = useState<boolean>(false);
 
   const { user, isLoaded } = useUser();
+  const router = useRouter();
 
+  
   useEffect(() => {
+    if(!user){
+      router.push("/start"); 
+    }
     if (isLoaded && user) {
       setClerkId(user.id);
     }
