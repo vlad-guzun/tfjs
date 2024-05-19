@@ -1,6 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { getAllTheFollowingsVideoPosts } from "@/lib/actions/user.action";
+import { getAllTheFollowingsVideoPosts, getAllVideosById } from "@/lib/actions/user.action";
 import { Heart } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import { CiPlay1 } from "react-icons/ci";
@@ -27,6 +27,7 @@ const VideoPlayer: React.FC<{ src: string; style: React.CSSProperties }> = ({ sr
             setIsPlaying(!video.paused);
         }
     };
+    
 
     return (
         <div className="relative">
@@ -46,11 +47,14 @@ export function StartScroll({ person }: { person: User_with_interests_location_r
     const [videos, setVideos] = useState<VideoPostProps[]>([]);
     const [videoStyles, setVideoStyles] = useState<VideoStyle>({});
 
+
     useEffect(() => {
         const getAllVideos = async () => {
-            const fetchedVideos = await getAllTheFollowingsVideoPosts(person.clerkId);
+            const fetchedVideos = await getAllVideosById(person.clerkId);
             setVideos(fetchedVideos);
             updateVideoStyles(fetchedVideos);
+            console.log(fetchedVideos);
+            console.log(person.clerkId);
         };
         getAllVideos();
     }, [person.clerkId]);

@@ -19,7 +19,7 @@ export async function findSimilarPeople( embedding: Number[]) {
                 queryVector: embedding,
                 path: "embeddedInterests",
                 numCandidates: 6,
-                limit: 3,
+                limit: 6,
                 index: "default"
             },
         },

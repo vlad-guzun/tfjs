@@ -6,7 +6,10 @@ export function StartPopover({person}: {person: User_with_interests_location_rea
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Image src={person.photo} width={50} height={50} alt="img" className="rounded-md"/>
+        <div className="text-white flex flex-col items-center">
+          <Image src={person.photo} width={50} height={50} alt="img" className="rounded-md"/>
+          <p className="font-serif text-xs">{person.username}</p>
+        </div>
       </PopoverTrigger>
       <PopoverContent 
         className="w-[200px] h-[350px] p-0 overflow-hidden bg-black border-none">

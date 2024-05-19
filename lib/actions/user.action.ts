@@ -162,3 +162,18 @@ export async function getAllTheFollowingsVideoPosts(clerkId: string | undefined)
     console.log(error);
   }
 }
+
+export async function getAllVideosById(clerkId: string | undefined){
+  try{
+    
+    await connectToDatabase();
+
+    const user = await FullUser.findOne({clerkId});
+    if(!user) throw new Error("User not found");
+    console.log(user);
+    return JSON.parse(JSON.stringify(user.video_posts));
+
+  }catch(error){
+    console.log(error);
+  }
+}
