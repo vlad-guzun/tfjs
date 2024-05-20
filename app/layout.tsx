@@ -10,6 +10,7 @@ import { Home } from "lucide-react";
 import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuDemo } from "@/components/Dropdown";
 import { Toaster } from "@/components/ui/toaster"
+import ActiveStatus from "@/components/ActiveStatus";
 
 
 
@@ -61,8 +62,9 @@ export default function RootLayout({
             </div>
             <div className="w-full lg:w-2/3 border-slate-800 lg:border-r"><div className="block lg:hidden top-0 sticky"><DropdownMenuDemo /></div>{children}</div>
             <Toaster />
+            <ActiveStatus />
             <div className="w-full lg:w-1/6">
-              <div className="p-3">
+              <div className="p-3 text-white">
                 <Link href={"/similar"}>Find someone</Link>
               </div>
             </div>

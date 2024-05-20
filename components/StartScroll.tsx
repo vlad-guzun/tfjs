@@ -1,5 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import useActiveList from "@/hooks/useActiveList";
 import { getAllTheFollowingsVideoPosts, getAllVideosById } from "@/lib/actions/user.action";
 import { Heart } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
@@ -15,6 +16,7 @@ interface VideoStyle {
 const VideoPlayer: React.FC<{ src: string; style: React.CSSProperties }> = ({ src, style }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    
 
     const togglePlay = () => {
         const video = videoRef.current;
@@ -91,6 +93,7 @@ export function StartScroll({ person }: { person: User_with_interests_location_r
                     <div key={video.url} className="relative mb-4">
                         <VideoPlayer src={video.url} style={videoStyles[video.url] || { width: '100%', height: '100%' }}  />
                         <Heart className="absolute text-red-500 right-2 bottom-[140px] text-2xl" />
+
                     </div>
                 ))}
             </div>
