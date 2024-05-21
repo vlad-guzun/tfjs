@@ -72,7 +72,7 @@ const StartPage = () => {
                     placeholder="Type..."
                 />
             </div>
-            <div className="flex justify-center mt-4 flex-wrap gap-7">
+            <div className="flex justify-center mt-4 flex-wrap gap-12">
                 {isLoading ? (
                     Array.from({ length: peoples.length }, (_, i) => <SkeletonDemo key={i} />)
                 ) : (

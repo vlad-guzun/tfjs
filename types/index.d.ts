@@ -54,6 +54,7 @@ declare type movie_with_embedding = {
       profile_photo: string,
       createdAt: Date
     }[],
+    lastSeen?: Date
   }
 
   declare type TextPostProps =  {

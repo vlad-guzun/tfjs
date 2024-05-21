@@ -177,3 +177,34 @@ export async function getAllVideosById(clerkId: string | undefined){
     console.log(error);
   }
 }
+
+export async function updateLastSeen(clerkId: string, date: Date){
+  try{
+    await connectToDatabase();
+
+    const updatedUser = await FullUser.findOneAndUpdate({clerkId}, {lastSeen: date}, {new: true});
+
+    if(!updatedUser) throw new Error("User update failed");
+
+    return JSON.parse(JSON.stringify(updatedUser));
+
+  }
+  catch(error){
+    console.log(error);
+  }
+}
+
+export async function checkActivityOfAllUsers() {
+  try {
+    await connectToDatabase();
+
+    const activeUsers = await FullUser.find({ lastSeen: { $exists: true } });
+
+    if (!activeUsers.length) throw new Error("No active users found");
+
+    return JSON.parse(JSON.stringify(activeUsers));
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error while checking activity of users");
+  }
+}

@@ -76,7 +76,11 @@ const FullUserSchema = new Schema({
           }
         }
       ]
+    },
+    lastSeen: {
+      type: Date,
     }
+
 });
 
 const FullUser = models?.FullUser || model("FullUser", FullUserSchema);
