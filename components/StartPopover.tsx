@@ -9,7 +9,7 @@ import { checkActivityOfAllUsers } from "../lib/actions/user.action";
 
 function formatLastSeen(lastSeen: Date | null): React.JSX.Element | null {
   if (!lastSeen) {
-    return <span className="text-white">offline</span>;
+    return <span className="text-white">away</span>;
   }
 
   const lastSeenDate = new Date(lastSeen);
