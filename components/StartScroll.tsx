@@ -1,12 +1,16 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import useActiveList from "@/hooks/useActiveList";
-import { getAllTheFollowingsVideoPosts, getAllVideosById } from "@/lib/actions/user.action";
-import { Heart } from "lucide-react";
+import { getAllVideosById } from "@/lib/actions/user.action";
+import { Copy, Heart, Plus, Share } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import { CiPlay1 } from "react-icons/ci";
 import { IoStopOutline } from "react-icons/io5";
-
+import Image from "next/image";
+import { Send } from "lucide-react";
+import { BsFillShareFill } from "react-icons/bs";
+import { HoverStarter } from "./HoverStarter";
+import { HoverStarterTwo } from "./HoverStarterTwo";
+import Link from "next/link";
+import { LiaEye } from "react-icons/lia";
 
 
 interface VideoStyle {
@@ -16,7 +20,6 @@ interface VideoStyle {
 const VideoPlayer: React.FC<{ src: string; style: React.CSSProperties }> = ({ src, style }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    
 
     const togglePlay = () => {
         const video = videoRef.current;
@@ -29,7 +32,6 @@ const VideoPlayer: React.FC<{ src: string; style: React.CSSProperties }> = ({ sr
             setIsPlaying(!video.paused);
         }
     };
-    
 
     return (
         <div className="relative">
@@ -48,7 +50,6 @@ const VideoPlayer: React.FC<{ src: string; style: React.CSSProperties }> = ({ sr
 export function StartScroll({ person }: { person: User_with_interests_location_reason }) {
     const [videos, setVideos] = useState<VideoPostProps[]>([]);
     const [videoStyles, setVideoStyles] = useState<VideoStyle>({});
-
 
     useEffect(() => {
         const getAllVideos = async () => {
@@ -78,7 +79,7 @@ export function StartScroll({ person }: { person: User_with_interests_location_r
                     tempStyles[video.url] = {
                         objectFit: 'cover',
                         width: '100%',
-                        height: '100%' 
+                        height: '100%'
                     };
                 }
                 setVideoStyles((prevStyles) => ({ ...prevStyles, ...tempStyles }));
@@ -87,16 +88,26 @@ export function StartScroll({ person }: { person: User_with_interests_location_r
     };
 
     return (
-        <ScrollArea className="h-full w-full rounded-md ">
-            <div className="text-black relative">
-                {videos.map((video) => (
-                    <div key={video.url} className="relative mb-4">
-                        <VideoPlayer src={video.url} style={videoStyles[video.url] || { width: '100%', height: '100%' }}  />
-                        <Heart className="absolute text-red-500 right-2 bottom-[140px] text-2xl" />
-
-                    </div>
-                ))}
+        <div className="flex h-full">
+            <ScrollArea className="flex-1 rounded-md">
+                <div className="text-black relative">
+                    {videos.map((video) => (
+                        <div className="relative mb-4" key={video.url}>
+                            <VideoPlayer src={video.url} style={videoStyles[video.url] || { width: '100%', height: '100%' }} />
+                            <Heart className="absolute text-red-500 right-2 bottom-[140px] text-2xl" />
+                        </div>
+                    ))}
+                </div>
+            </ScrollArea>
+            <div className="flex flex-col items-center ml-2">
+                <Image src={person.photo} width={40} height={40} alt="Profile picture" className="rounded-full" />
+                <div className="flex flex-col items-center gap-[6px]">
+                    <HoverStarterTwo icon={<Link href={`/myprofile/${person.username}`}><LiaEye className="mt-3" color="white" size={20}/></Link>} text={<span>see <span className="text-pink-500">{person.username}</span> profile</span>} />
+                    <HoverStarterTwo icon={<Link href={`/change`}><Plus color="white" size={24}/></Link>} text={<span>follow <span className="text-pink-500">{person.username}</span></span>} />
+                    <HoverStarterTwo icon={<Link href={`/send`}><Send color="white" size={18}/></Link>} text={<span>send <span className="text-pink-500">{person.username}</span> a private message</span>} />
+                    <HoverStarterTwo icon={<Link href={`/copy`}><Copy className="mt-1" color="white" size={18}/></Link>} text={<span>copy <span className="text-pink-500">{person.username}</span> profile</span>} />
+                </div>
             </div>
-        </ScrollArea>
+        </div>
     );
 }
