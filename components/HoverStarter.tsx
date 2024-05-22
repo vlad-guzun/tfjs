@@ -21,7 +21,7 @@ export function HoverStarter({person}: {person: User_with_interests_location_rea
         <Link href={`/myprofile/${person.username}`}><TiEyeOutline color="white" size={25}/></Link>
       </HoverCardTrigger>
       <HoverCardContent className="w-42 font-serif bg-black text-white">
-        <Link href={`/myprofile/${person.username}`}>See <span className="text-pink-600">{person.username}</span>'s profile</Link>
+        <Link href={`/myprofile/${person.username}`}>See <span className="text-pink-600">{person.username}</span> profile</Link>
       </HoverCardContent>
     </HoverCard>
   )
