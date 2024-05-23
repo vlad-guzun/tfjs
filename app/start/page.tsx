@@ -132,6 +132,45 @@ const StartPage = () => {
         <div className='relative text-white h-screen mt-[100px] lg:mt-[150px]' ref={containerRef}>
             <style>
                 {`
+                body {
+                    background-color: #000; /* Black background */
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .gradient {
+                    --size: 750px;
+                    --speed: 50s;
+                    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+
+                    width: var(--size);
+                    height: var(--size);
+                    filter: blur(calc(var(--size) / 16)); /* Further reduced blur for minimal glow */
+                    background-image: linear-gradient(hsl(0, 0%, 50%), hsl(0, 0%, 30%)); /* Lightest grey gradient */
+                    animation: rotate var(--speed) var(--easing) alternate infinite;
+                    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+                    position: absolute;
+                    top: calc(50% - 150px); /* Adjusted to move 150px up from center */
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: -1;
+                }
+
+                @media (min-width: 720px) {
+                    .gradient {
+                        --size: 500px;
+                    }
+                }
+
+                @keyframes rotate {
+                    0% {
+                        transform: translate(-50%, -50%) rotate(0deg);
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) rotate(360deg);
+                    }
+                }
+
                 .text-item-glow {
                     text-shadow: 0 0 2px white, 
                                  0 0 4px rgba(255, 255, 255, 0.8), 
@@ -159,17 +198,18 @@ const StartPage = () => {
                 }
                 .glowing-textarea:focus {
                     border-color: rgba(255, 255, 255, 0.5);
-                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 
-                                0 0 30px rgba(255, 255, 255, 0.4), 
-                                0 0 45px rgba(255, 255, 255, 0.3);
+                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.4), 
+                                0 0 20px rgba(255, 255, 255, 0.3), 
+                                0 0 30px rgba(255, 255, 255, 0.2);
                     outline: none;
                 }
                 `}
             </style>
+            <div className="gradient"></div>
             <div className="relative flex justify-center items-center mt-10 z-10" style={{ height: '300px' }}>
                 <div className="relative z-20">
                     <Textarea
-                        className='glowing-textarea w-[300px] md:w-[350px] lg:w-[400px] font-serif relative z-20'
+                        className='glowing-textarea w-[260px] md:w-[350px] lg:w-[400px] font-serif relative z-20'
                         value={inputValue}
                         onChange={handleInputChange}
                         onFocus={handleFocus}
