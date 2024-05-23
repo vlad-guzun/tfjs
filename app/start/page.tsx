@@ -119,7 +119,7 @@ const StartPage = () => {
                 <defs>
                     <path id="ovalPath" d={ovalPath} />
                 </defs>
-                <text fill="white" fontSize="12" fontFamily="serif" className="enhanced-glow">
+                <text fill="white" fontSize="12" fontFamily="serif" className="subtle-glow">
                     <textPath href="#ovalPath" startOffset="0%">
                         {repeatedText}
                     </textPath>
@@ -156,16 +156,38 @@ const StartPage = () => {
                     z-index: -1;
                 }
 
-                .enhanced-glow {
-                    text-shadow: 0 0 6px rgba(255, 255, 255, 0.7), 
-                                 0 0 12px rgba(255, 255, 255, 0.5);
+                @media (max-width: 768px) {
+                    .gradient {
+                        --size: 450px; /* Slightly smaller size for small screens */
+                    }
+                }
+
+                @media (min-width: 769px) and (max-width: 1024px) {
+                    .gradient {
+                        --size: 500px; /* Slightly larger size for medium screens */
+                    }
+                }
+
+                @media (min-width: 1025px) {
+                    .gradient {
+                        --size: 600px; /* Increased size for large screens */
+                    }
+                }
+
+                @keyframes rotate {
+                    0% {
+                        transform: translate(-50%, -50%) rotate(0deg);
+                    }
+                    100% {
+                        transform: translate(-50%, -50%) rotate(360deg);
+                    }
                 }
 
                 .text-item-glow {
-                    text-shadow: 0 0 2px white, 
-                                 0 0 4px rgba(255, 255, 255, 0.8), 
-                                 0 0 6px rgba(255, 255, 255, 0.6), 
-                                 0 0 10px rgba(255, 255, 255, 0.4), 
+                    text-shadow: 0 0 8px white, 
+                                 0 0 8px rgba(255, 255, 255, 0.8), 
+                                 0 0 8px rgba(255, 255, 255, 0.6), 
+                                 0 0 20px rgba(255, 255, 255, 0.4), 
                                  0 0 15px rgba(255, 255, 255, 0.3);
                 }
                 .focus-glow text {
@@ -194,6 +216,10 @@ const StartPage = () => {
                     outline: none;
                 }
 
+                .subtle-glow {
+                    text-shadow: 0 0 2px rgba(255, 255, 255, 0.5), 
+                                 0 0 4px rgba(255, 255, 255, 0.3);
+                }
                 `}
             </style>
             <div className="gradient"></div>
