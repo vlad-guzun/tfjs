@@ -129,7 +129,7 @@ const StartPage = () => {
     };
 
     return (
-        <div className='relative text-white h-screen mt-[100px] lg:mt-[150px]' ref={containerRef}>
+        <div className='relative text-white h-screen mt-[100px] lg:mt-[150px] mb-[30px]' ref={containerRef}>
             <style>
                 {`
                 body {
@@ -139,7 +139,7 @@ const StartPage = () => {
                 }
 
                 .gradient {
-                    --size: 750px;
+                    --size: 500px;
                     --speed: 50s;
                     --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
 
@@ -156,9 +156,21 @@ const StartPage = () => {
                     z-index: -1;
                 }
 
-                @media (min-width: 720px) {
+                @media (max-width: 768px) {
                     .gradient {
-                        --size: 500px;
+                        --size: 450px; /* Slightly smaller size for small screens */
+                    }
+                }
+
+                @media (min-width: 769px) and (max-width: 1024px) {
+                    .gradient {
+                        --size: 500px; /* Slightly larger size for medium screens */
+                    }
+                }
+
+                @media (min-width: 1025px) {
+                    .gradient {
+                        --size: 600px; /* Increased size for large screens */
                     }
                 }
 
