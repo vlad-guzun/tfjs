@@ -110,10 +110,14 @@ const StartPage = () => {
     const generatePathText = () => {
         const repeatedText = textItems.join(' • ');
 
+        const ovalPath = isSmallScreen 
+            ? "M 250, 100 m -230, 0 a 230,90 0 1,1 460,0 a 230,90 0 1,1 -460,0"
+            : "M 250, 100 m -190, 0 a 190,75 0 1,1 380,0 a 190,75 0 1,1 -380,0";
+
         return (
             <svg width="100%" height="100%" viewBox="0 0 500 200" className="absolute inset-0 z-0">
                 <defs>
-                    <path id="ovalPath" d="M 250, 100 m -190, 0 a 190,75 0 1,1 380,0 a 190,75 0 1,1 -380,0" />
+                    <path id="ovalPath" d={ovalPath} />
                 </defs>
                 <text fill="white" fontSize="12" fontFamily="serif">
                     <textPath href="#ovalPath" startOffset="0%">
