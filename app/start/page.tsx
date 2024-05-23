@@ -119,7 +119,7 @@ const StartPage = () => {
                 <defs>
                     <path id="ovalPath" d={ovalPath} />
                 </defs>
-                <text fill="white" fontSize="12" fontFamily="serif">
+                <text fill="white" fontSize="12" fontFamily="serif" className="enhanced-glow">
                     <textPath href="#ovalPath" startOffset="0%">
                         {repeatedText}
                     </textPath>
@@ -156,31 +156,9 @@ const StartPage = () => {
                     z-index: -1;
                 }
 
-                @media (max-width: 768px) {
-                    .gradient {
-                        --size: 450px; /* Slightly smaller size for small screens */
-                    }
-                }
-
-                @media (min-width: 769px) and (max-width: 1024px) {
-                    .gradient {
-                        --size: 500px; /* Slightly larger size for medium screens */
-                    }
-                }
-
-                @media (min-width: 1025px) {
-                    .gradient {
-                        --size: 600px; /* Increased size for large screens */
-                    }
-                }
-
-                @keyframes rotate {
-                    0% {
-                        transform: translate(-50%, -50%) rotate(0deg);
-                    }
-                    100% {
-                        transform: translate(-50%, -50%) rotate(360deg);
-                    }
+                .enhanced-glow {
+                    text-shadow: 0 0 6px rgba(255, 255, 255, 0.7), 
+                                 0 0 12px rgba(255, 255, 255, 0.5);
                 }
 
                 .text-item-glow {
@@ -215,6 +193,7 @@ const StartPage = () => {
                                 0 0 30px rgba(255, 255, 255, 0.2);
                     outline: none;
                 }
+
                 `}
             </style>
             <div className="gradient"></div>
