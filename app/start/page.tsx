@@ -50,6 +50,18 @@ const StartPage = () => {
         setInputValue(event.target.value);
     };
 
+    const handleFocus = () => {
+        document.querySelectorAll('.text-item').forEach((item) => {
+            item.classList.add('text-item-glow');
+        });
+    };
+
+    const handleBlur = () => {
+        document.querySelectorAll('.text-item').forEach((item) => {
+            item.classList.remove('text-item-glow');
+        });
+    };
+
     const textItems = [
         "post",
         "discover",
@@ -66,25 +78,54 @@ const StartPage = () => {
             <style>
                 {`
                 .text-item {
-                    opacity: 0.5;
-                    transition: color 0.3s, opacity 0.3s, text-shadow 0.3s;
-                }
-                .text-item:hover {
                     color: white;
                     opacity: 1;
-                    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 
-                                 0 0 16px rgba(255, 255, 255, 0.6), 
-                                 0 0 24px rgba(255, 255, 255, 0.4);
+                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 
+                                 0 0 30px rgba(255, 255, 255, 0.4),
+                                 0 0 45px rgba(255, 255, 255, 0.3),
+                                 0 0 60px rgba(255, 255, 255, 0.2),
+                                 0 0 75px rgba(255, 255, 255, 0.1);
+                    transition: text-shadow 0.3s, opacity 0.3s;
+                }
+                .text-item:hover {
+                    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
+                                 0 0 60px rgba(255, 255, 255, 0.6), 
+                                 0 0 90px rgba(255, 255, 255, 0.4);
+                }
+                .text-item-glow {
+                    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
+                                 0 0 60px rgba(255, 255, 255, 0.6), 
+                                 0 0 90px rgba(255, 255, 255, 0.4);
+                }
+                .glowing-textarea {
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    background-color: black;
+                    color: white;
+                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 
+                                 0 0 30px rgba(255, 255, 255, 0.4),
+                                 0 0 45px rgba(255, 255, 255, 0.3),
+                                 0 0 60px rgba(255, 255, 255, 0.2),
+                                 0 0 75px rgba(255, 255, 255, 0.1);
+                    transition: text-shadow 0.3s, border-color 0.3s, box-shadow 0.3s;
+                }
+                .glowing-textarea:focus {
+                    border-color: rgba(255, 255, 255, 0.5);
+                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.7), 
+                                0 0 60px rgba(255, 255, 255, 0.5), 
+                                0 0 90px rgba(255, 255, 255, 0.3);
+                    outline: none;
                 }
                 `}
             </style>
             <div className="relative flex justify-center items-center mt-10 z-10" style={{ height: '300px' }}>
                 <div className="relative z-20">
                     <Textarea
-                        className='border-gray-700 bg-black w-[400px] font-serif relative z-20'
+                        className='glowing-textarea w-[300px] lg:w-[400px] font-serif relative z-20'
                         value={inputValue}
                         onChange={handleInputChange}
-                        placeholder="Type to find someone..."
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                        placeholder="Type and find someone..."
                     />
                 </div>
                 <div className="absolute inset-0 flex justify-center items-center overflow-hidden z-0">
@@ -94,12 +135,13 @@ const StartPage = () => {
                         const yRadius = 100; 
                         const x = Math.cos((angle * Math.PI) / 180) * xRadius;
                         const y = Math.sin((angle * Math.PI) / 180) * yRadius;
+                        const rotate = text === "like profiles" ? angle + 250 : angle + 60;
                         return (
                             <div
                                 key={index}
-                                className="absolute text-2xl text-pink-600 text-item font-serif"
+                                className="absolute text-md text-item font-serif"
                                 style={{
-                                    transform: `translate(${x}px, ${y}px) rotate(${angle + 60}deg)`,
+                                    transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
                                     transformOrigin: 'center',
                                     whiteSpace: 'nowrap'
                                 }}
