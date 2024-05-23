@@ -14,6 +14,18 @@ const StartPage = () => {
     const [peoples, setPeoples] = useState<User_with_interests_location_reason[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const lastExecutionTimeRef = useRef<Date>(new Date());
+    const [isSmallScreen, setIsSmallScreen] = useState<boolean>(window.innerWidth < 768);
+    const [isLargeScreen, setIsLargeScreen] = useState<boolean>(window.innerWidth >= 1024); 
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 768);
+            setIsLargeScreen(window.innerWidth >= 1024);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const loadModel = async () => {
@@ -62,7 +74,7 @@ const StartPage = () => {
         });
     };
 
-    const textItems = [
+    const textItemsSmallScreen = [
         "post",
         "discover",
         "like profiles",
@@ -72,6 +84,68 @@ const StartPage = () => {
         "send messages",
         "follow people"
     ];
+
+    const textItemsLargeScreen = [
+        "post",
+        "discover",
+        "like profiles",
+        "learn",
+        "relax",
+        "watch reels",
+        "send messages",
+        "follow people"
+    ];
+
+    const getTextItemStyle = (index: number, isSmallScreen: boolean, isLargeScreen: boolean): React.CSSProperties => {
+        const angle = (index / (isSmallScreen ? textItemsSmallScreen.length : textItemsLargeScreen.length)) * 360;
+        const isFarther = ["discover"].includes(textItemsSmallScreen[index]);
+        let xRadius, yRadius;
+    
+        if (textItemsSmallScreen[index] === "watch reels") {
+            xRadius = isSmallScreen ? 169 : (isLargeScreen ? 229 : 219); 
+            yRadius = isSmallScreen ? 79 : (isLargeScreen ? 109 : 99);  
+        } else if (textItemsSmallScreen[index] === "learn") {
+            xRadius = isSmallScreen ? 190 : 240; 
+            yRadius = isSmallScreen ? 85 : 115;  
+        } else if (textItemsSmallScreen[index] === "follow people") {
+            xRadius = isSmallScreen ? 190 : 240; 
+            yRadius = isSmallScreen ? 85 : 115;  
+        } else {
+            xRadius = isFarther ? (isSmallScreen ? 250 : 350) : (isSmallScreen ? 200 : 300);
+            yRadius = isFarther ? (isSmallScreen ? 90 : 120) : (isSmallScreen ? 70 : 100);
+        }
+    
+        const x = Math.cos((angle * Math.PI) / 180) * xRadius;
+        const y = Math.sin((angle * Math.PI) / 180) * yRadius;
+    
+        let rotate = angle; 
+        if (textItemsSmallScreen[index] === "like profiles") {
+            rotate += 270; 
+        } else if (textItemsSmallScreen[index] === "watch reels") {
+            rotate += 125; 
+        } else if (textItemsSmallScreen[index] === "send messages") {
+            rotate += 90; 
+        } else if (textItemsSmallScreen[index] === "follow people") {
+            rotate += 60; 
+        } else if (textItemsSmallScreen[index] === "post") {
+            rotate += 90;
+        } else if (textItemsSmallScreen[index] === "discover") {
+            rotate += 100;
+        } else if (textItemsSmallScreen[index] === "learn") {
+            rotate += 260;
+        } else if (textItemsSmallScreen[index] === "relax") {
+            rotate += 80;
+        }
+    
+        return {
+            transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
+            transformOrigin: 'center',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none' 
+        };
+    };
+
+    const textItemsToRender = isSmallScreen ? textItemsSmallScreen : textItemsLargeScreen;
 
     return (
         <div className='relative text-white h-screen mt-[100px] lg:mt-[150px]'>
@@ -120,7 +194,7 @@ const StartPage = () => {
             <div className="relative flex justify-center items-center mt-10 z-10" style={{ height: '300px' }}>
                 <div className="relative z-20">
                     <Textarea
-                        className='glowing-textarea w-[300px] lg:w-[400px] font-serif relative z-20'
+                        className='glowing-textarea w-[300px] md:w-[350px] lg:w-[400px] font-serif relative z-20'
                         value={inputValue}
                         onChange={handleInputChange}
                         onFocus={handleFocus}
@@ -129,27 +203,15 @@ const StartPage = () => {
                     />
                 </div>
                 <div className="absolute inset-0 flex justify-center items-center overflow-hidden z-0">
-                    {textItems.map((text, index) => {
-                        const angle = (index / textItems.length) * 360;
-                        const xRadius = 300; 
-                        const yRadius = 100; 
-                        const x = Math.cos((angle * Math.PI) / 180) * xRadius;
-                        const y = Math.sin((angle * Math.PI) / 180) * yRadius;
-                        const rotate = text === "like profiles" ? angle + 250 : angle + 60;
-                        return (
-                            <div
-                                key={index}
-                                className="absolute text-md text-item font-serif"
-                                style={{
-                                    transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
-                                    transformOrigin: 'center',
-                                    whiteSpace: 'nowrap'
-                                }}
-                            >
-                                {text}
-                            </div>
-                        );
-                    })}
+                    {textItemsToRender.map((text, index) => (
+                        <div
+                            key={index}
+                            className="absolute text-md text-item font-serif"
+                            style={getTextItemStyle(index, isSmallScreen, isLargeScreen)}
+                        >
+                            {text}
+                        </div>
+                    ))}
                 </div>
             </div>
             <div className="flex justify-center mt-4 flex-wrap gap-12 z-10">
