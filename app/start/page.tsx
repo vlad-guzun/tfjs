@@ -16,6 +16,7 @@ const StartPage = () => {
     const lastExecutionTimeRef = useRef<Date>(new Date());
     const [isSmallScreen, setIsSmallScreen] = useState<boolean>(window.innerWidth < 768);
     const [isLargeScreen, setIsLargeScreen] = useState<boolean>(window.innerWidth >= 1024); 
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleResize = () => {
@@ -63,15 +64,15 @@ const StartPage = () => {
     };
 
     const handleFocus = () => {
-        document.querySelectorAll('.text-item').forEach((item) => {
-            item.classList.add('text-item-glow');
-        });
+        if (containerRef.current) {
+            containerRef.current.classList.add('focus-glow');
+        }
     };
 
     const handleBlur = () => {
-        document.querySelectorAll('.text-item').forEach((item) => {
-            item.classList.remove('text-item-glow');
-        });
+        if (containerRef.current) {
+            containerRef.current.classList.remove('focus-glow');
+        }
     };
 
     const textItems = [
@@ -82,84 +83,81 @@ const StartPage = () => {
         "relax",
         "watch reels",
         "send messages",
-        "follow people"
+        "follow people",
+        "explore",
+        "connect",
+        "share",
+        "enjoy",
+        "create",
+        "interact",
+        "network",
+        "engage",
+        "participate",
+        "join",
+        "connect",
+        "experience",
+        "develop",
+        "innovate",
+        "grow",
+        "find friends",
+        "meet new people",
+        "chat",
+        "stay updated",
+        "stay connected",
+        "follow trends"
     ];
 
-    const getTextItemStyle = (index: number, isSmallScreen: boolean, isLargeScreen: boolean): React.CSSProperties => {
-        const angle = (index / textItems.length) * 360;
-        const xRadius = isSmallScreen ? 200 : (isLargeScreen ? 280 : 240);
-        const yRadius = isSmallScreen ? 70 : (isLargeScreen ? 90 : 100);
+    const generatePathText = () => {
+        const repeatedText = textItems.join(' • ');
 
-        const x = Math.cos((angle * Math.PI) / 180) * xRadius;
-        const y = Math.sin((angle * Math.PI) / 180) * yRadius;
-    
-        let rotate = angle; 
-        if (textItems[index] === "like profiles") {
-            rotate += 270; 
-        } else if (textItems[index] === "watch reels") {
-            rotate += 125; 
-        } else if (textItems[index] === "send messages") {
-            rotate += 90; 
-        } else if (textItems[index] === "follow people") {
-            rotate += 60; 
-        } else if (textItems[index] === "post") {
-            rotate += 90;
-        } else if (textItems[index] === "discover") {
-            rotate += 100;
-        } else if (textItems[index] === "learn") {
-            rotate += 260;
-        } else if (textItems[index] === "relax") {
-            rotate += 80;
-        }
-    
-        return {
-            transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
-            transformOrigin: 'center',
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none' 
-        };
+        return (
+            <svg width="100%" height="100%" viewBox="0 0 500 200" className="absolute inset-0 z-0">
+                <defs>
+                    <path id="ovalPath" d="M 250, 100 m -190, 0 a 190,75 0 1,1 380,0 a 190,75 0 1,1 -380,0" />
+                </defs>
+                <text fill="white" fontSize="12" fontFamily="serif">
+                    <textPath href="#ovalPath" startOffset="0%">
+                        {repeatedText}
+                    </textPath>
+                </text>
+            </svg>
+        );
     };
 
     return (
-        <div className='relative text-white h-screen mt-[100px] lg:mt-[150px]'>
+        <div className='relative text-white h-screen mt-[100px] lg:mt-[150px]' ref={containerRef}>
             <style>
                 {`
-                .text-item {
-                    color: white;
-                    opacity: 1;
-                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 
-                                 0 0 30px rgba(255, 255, 255, 0.4),
-                                 0 0 45px rgba(255, 255, 255, 0.3),
-                                 0 0 60px rgba(255, 255, 255, 0.2),
-                                 0 0 75px rgba(255, 255, 255, 0.1);
-                    transition: text-shadow 0.3s, opacity 0.3s;
-                }
-                .text-item:hover {
-                    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
-                                 0 0 60px rgba(255, 255, 255, 0.6), 
-                                 0 0 90px rgba(255, 255, 255, 0.4);
-                }
                 .text-item-glow {
-                    text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
-                                 0 0 60px rgba(255, 255, 255, 0.6), 
-                                 0 0 90px rgba(255, 255, 255, 0.4);
+                    text-shadow: 0 0 2px white, 
+                                 0 0 4px rgba(255, 255, 255, 0.8), 
+                                 0 0 6px rgba(255, 255, 255, 0.6), 
+                                 0 0 10px rgba(255, 255, 255, 0.4), 
+                                 0 0 15px rgba(255, 255, 255, 0.3);
+                }
+                .focus-glow text {
+                    text-shadow: 0 0 2px white, 
+                                 0 0 4px rgba(255, 255, 255, 0.8), 
+                                 0 0 6px rgba(255, 255, 255, 0.6), 
+                                 0 0 10px rgba(255, 255, 255, 0.4), 
+                                 0 0 15px rgba(255, 255, 255, 0.3);
                 }
                 .glowing-textarea {
                     border: 1px solid rgba(255, 255, 255, 0.2);
                     background-color: black;
                     color: white;
-                    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 
-                                 0 0 30px rgba(255, 255, 255, 0.4),
-                                 0 0 45px rgba(255, 255, 255, 0.3),
-                                 0 0 60px rgba(255, 255, 255, 0.2),
-                                 0 0 75px rgba(255, 255, 255, 0.1);
+                    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 
+                                 0 0 20px rgba(255, 255, 255, 0.4),
+                                 0 0 30px rgba(255, 255, 255, 0.3),
+                                 0 0 40px rgba(255, 255, 255, 0.2),
+                                 0 0 50px rgba(255, 255, 255, 0.1);
                     transition: text-shadow 0.3s, border-color 0.3s, box-shadow 0.3s;
                 }
                 .glowing-textarea:focus {
                     border-color: rgba(255, 255, 255, 0.5);
-                    box-shadow: 0 0 30px rgba(255, 255, 255, 0.7), 
-                                0 0 60px rgba(255, 255, 255, 0.5), 
-                                0 0 90px rgba(255, 255, 255, 0.3);
+                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 
+                                0 0 30px rgba(255, 255, 255, 0.4), 
+                                0 0 45px rgba(255, 255, 255, 0.3);
                     outline: none;
                 }
                 `}
@@ -175,17 +173,7 @@ const StartPage = () => {
                         placeholder="Type and find someone..."
                     />
                 </div>
-                <div className="absolute inset-0 flex justify-center items-center overflow-hidden z-0">
-                    {textItems.map((text, index) => (
-                        <div
-                            key={index}
-                            className="absolute text-md text-item font-serif"
-                            style={getTextItemStyle(index, isSmallScreen, isLargeScreen)}
-                        >
-                            {text}
-                        </div>
-                    ))}
-                </div>
+                {generatePathText()}
             </div>
             <div className="flex justify-center mt-4 flex-wrap gap-12 z-10">
                 {isLoading ? (
