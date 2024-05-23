@@ -74,18 +74,7 @@ const StartPage = () => {
         });
     };
 
-    const textItemsSmallScreen = [
-        "post",
-        "discover",
-        "like profiles",
-        "learn",
-        "relax",
-        "watch reels",
-        "send messages",
-        "follow people"
-    ];
-
-    const textItemsLargeScreen = [
+    const textItems = [
         "post",
         "discover",
         "like profiles",
@@ -97,43 +86,29 @@ const StartPage = () => {
     ];
 
     const getTextItemStyle = (index: number, isSmallScreen: boolean, isLargeScreen: boolean): React.CSSProperties => {
-        const angle = (index / (isSmallScreen ? textItemsSmallScreen.length : textItemsLargeScreen.length)) * 360;
-        const isFarther = ["discover"].includes(textItemsSmallScreen[index]);
-        let xRadius, yRadius;
-    
-        if (textItemsSmallScreen[index] === "watch reels") {
-            xRadius = isSmallScreen ? 169 : (isLargeScreen ? 229 : 219); 
-            yRadius = isSmallScreen ? 79 : (isLargeScreen ? 109 : 99);  
-        } else if (textItemsSmallScreen[index] === "learn") {
-            xRadius = isSmallScreen ? 190 : 240; 
-            yRadius = isSmallScreen ? 85 : 115;  
-        } else if (textItemsSmallScreen[index] === "follow people") {
-            xRadius = isSmallScreen ? 190 : 240; 
-            yRadius = isSmallScreen ? 85 : 115;  
-        } else {
-            xRadius = isFarther ? (isSmallScreen ? 250 : 350) : (isSmallScreen ? 200 : 300);
-            yRadius = isFarther ? (isSmallScreen ? 90 : 120) : (isSmallScreen ? 70 : 100);
-        }
-    
+        const angle = (index / textItems.length) * 360;
+        const xRadius = isSmallScreen ? 200 : (isLargeScreen ? 280 : 240);
+        const yRadius = isSmallScreen ? 70 : (isLargeScreen ? 90 : 100);
+
         const x = Math.cos((angle * Math.PI) / 180) * xRadius;
         const y = Math.sin((angle * Math.PI) / 180) * yRadius;
     
         let rotate = angle; 
-        if (textItemsSmallScreen[index] === "like profiles") {
+        if (textItems[index] === "like profiles") {
             rotate += 270; 
-        } else if (textItemsSmallScreen[index] === "watch reels") {
+        } else if (textItems[index] === "watch reels") {
             rotate += 125; 
-        } else if (textItemsSmallScreen[index] === "send messages") {
+        } else if (textItems[index] === "send messages") {
             rotate += 90; 
-        } else if (textItemsSmallScreen[index] === "follow people") {
+        } else if (textItems[index] === "follow people") {
             rotate += 60; 
-        } else if (textItemsSmallScreen[index] === "post") {
+        } else if (textItems[index] === "post") {
             rotate += 90;
-        } else if (textItemsSmallScreen[index] === "discover") {
+        } else if (textItems[index] === "discover") {
             rotate += 100;
-        } else if (textItemsSmallScreen[index] === "learn") {
+        } else if (textItems[index] === "learn") {
             rotate += 260;
-        } else if (textItemsSmallScreen[index] === "relax") {
+        } else if (textItems[index] === "relax") {
             rotate += 80;
         }
     
@@ -144,8 +119,6 @@ const StartPage = () => {
             pointerEvents: 'none' 
         };
     };
-
-    const textItemsToRender = isSmallScreen ? textItemsSmallScreen : textItemsLargeScreen;
 
     return (
         <div className='relative text-white h-screen mt-[100px] lg:mt-[150px]'>
@@ -203,7 +176,7 @@ const StartPage = () => {
                     />
                 </div>
                 <div className="absolute inset-0 flex justify-center items-center overflow-hidden z-0">
-                    {textItemsToRender.map((text, index) => (
+                    {textItems.map((text, index) => (
                         <div
                             key={index}
                             className="absolute text-md text-item font-serif"
