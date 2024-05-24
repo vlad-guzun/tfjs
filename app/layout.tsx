@@ -65,7 +65,7 @@ export default function RootLayout({
             <ActiveStatus />
             <div className="w-full lg:w-1/6">
               <div className="p-3 text-white">
-                <Link href={"/similar"}>Find someone</Link>
+                {/* <Link href={"/similar"}>Find someone</Link> */}
               </div>
             </div>
           </div>
