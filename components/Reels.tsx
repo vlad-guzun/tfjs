@@ -8,26 +8,27 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getAllTheFollowingsVideoPosts } from "@/lib/actions/user.action";
+import { getAllPersonsYouFollow } from "@/lib/actions/user.action";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import { IoIosHeart } from "react-icons/io";
-import Image from "next/image";
 import { ReelPopover } from "./ReelPopover";
 
 export function CarouselOrientation() {
   const { user } = useUser();
-  const [posts, setPosts] = useState<VideoPostProps[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [liked, setLiked] = useState<boolean[]>([]);
+  const [followings, setFollowings] = useState<User_with_interests_location_reason[]>([]);
 
   useEffect(() => {
-    async function fetchPosts() {
-      const user_posts = await getAllTheFollowingsVideoPosts(user?.id);
-      setPosts(user_posts);
-      setLiked(Array(user_posts?.length).fill(false));
+    async function fetchFollowings() {
+      const followings: User_with_interests_location_reason[] = await getAllPersonsYouFollow(user?.id);
+      setFollowings(followings);
+
+      const totalVideos = followings?.reduce((count, following) => count + (following.video_posts?.length || 0), 0);
+      setLiked(Array(totalVideos).fill(false));
     }
-    fetchPosts();
+    fetchFollowings();
   }, [user?.id]);
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export function CarouselOrientation() {
         }
       });
     };
-  }, [posts]);
+  }, [followings]);
 
   const handleVideoClick = (event: React.MouseEvent<HTMLVideoElement>) => {
     const video = event.currentTarget;
@@ -86,36 +87,41 @@ export function CarouselOrientation() {
       className="w-full max-w-md bg-black border-none"
     >
       <CarouselContent className="-mt-1 h-screen border-none bg-black">
-        {posts?.map((post, index) => (
-          <CarouselItem key={index} className="h-full">
-            <Card className="h-full bg-black border-none relative">
-              <CardContent className="bg-black relative">
-                <video
-                  ref={(el) => {
-                    videoRefs.current[index] = el;
-                  }}
-                  className="h-full w-full rounded-lg"
-                  src={post.url}
-                  playsInline
-                  loop
-                  controls={false}
-                  onClick={handleVideoClick}
-                ></video>
-                <IoIosHeart
-                  onClick={() => toggleLike(index)}
-                  className={`absolute right-[17px] sm:right-[-18px] top-1/2 transform -translate-y-1/2 mr-4 ${
-                    liked[index] ? 'text-red-500' : 'text-white'
-                  }`}
-                  size={25}
-                />
-               <div className="absolute bottom-[60px] right-[35px] sm:right-[0px]">
-                  <ReelPopover post={post} />
-                </div>
-                <p className="absolute bottom-[-1] left-5 text-white p-2  rounded-md font-serif">{post.title}</p>
-              </CardContent>
-            </Card>
-          </CarouselItem>
-        ))}
+        {followings?.map((following, followingIndex) =>
+          following.video_posts?.map((post, postIndex) => {
+            const videoIndex = following.video_posts?.slice(0, postIndex).reduce((acc, vp) => acc + (vp ? 1 : 0), 0) ?? 0;
+            return (
+              <CarouselItem key={postIndex} className="h-full">
+                <Card className="h-full bg-black border-none relative">
+                  <CardContent className="bg-black relative">
+                    <video
+                      ref={(el) => {
+                        videoRefs.current[videoIndex] = el;
+                      }}
+                      className="h-full w-full rounded-lg"
+                      src={post.url}
+                      playsInline
+                      loop
+                      controls={false}
+                      onClick={handleVideoClick}
+                    ></video>
+                    <IoIosHeart
+                      onClick={() => toggleLike(videoIndex)}
+                      className={`absolute right-[17px] sm:right-[-18px] top-1/2 transform -translate-y-1/2 mr-4 ${
+                        liked[videoIndex] ? 'text-red-500' : 'text-white'
+                      }`}
+                      size={25}
+                    />
+                    <div className="absolute bottom-[60px] right-[35px] sm:right-[0px]">
+                      <ReelPopover following={following}/>
+                    </div>
+                    <p className="absolute bottom-[-1] left-5 text-white p-2 rounded-md font-serif">{post.title}</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            );
+          })
+        )}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />

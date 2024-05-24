@@ -208,3 +208,21 @@ export async function checkActivityOfAllUsers() {
     throw new Error("Error while checking activity of users");
   }
 }
+
+export async function getAllPersonsYouFollow(clerkId: string | undefined){
+
+  try{
+    
+    await connectToDatabase();
+
+    const user = await FullUser.findOne({clerkId});
+    if(!user) throw new Error("User not found");
+
+    const followed_users = await FullUser.find({ clerkId: {$in: user.following}});
+    return JSON.parse(JSON.stringify(followed_users));
+
+  }
+  catch(error){
+    console.log(error);
+  }
+}
