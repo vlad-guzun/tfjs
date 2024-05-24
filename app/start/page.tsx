@@ -7,6 +7,12 @@ import { SkeletonDemo } from '@/components/SkeletonCart';
 import { findSimilarPeople } from '@/lib/actions/generate.similar.people';
 import { StartPopover } from '@/components/StartPopover';
 import { Textarea } from '@/components/ui/textarea';
+import { SignInButton } from '@clerk/nextjs';
+import { Button } from '@/components/ui/button';
+import { FaGoogle,FaInstagram,FaMicrosoft } from 'react-icons/fa';
+import { TiSocialFacebook } from "react-icons/ti";
+import { LoginPopover } from '@/components/LogInPopover';
+
 
 const StartPage = () => {
     const [inputValue, setInputValue] = useState<string>('');
@@ -245,6 +251,7 @@ const StartPage = () => {
                     ))
                 )}
             </div>
+            <LoginPopover />
         </div>
     );
 };
