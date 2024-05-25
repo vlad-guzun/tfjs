@@ -13,6 +13,8 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { ReelPopover } from "./ReelPopover";
+import { BiSolidMessageRounded } from "react-icons/bi";
+import { ReelComments } from "./ReelComments";
 
 export function CarouselOrientation() {
   const { user } = useUser();
@@ -112,6 +114,7 @@ export function CarouselOrientation() {
                       }`}
                       size={25}
                     />
+                    <ReelComments />
                     <div className="absolute bottom-[60px] right-[35px] sm:right-[0px]">
                       <ReelPopover following={following}/>
                     </div>
