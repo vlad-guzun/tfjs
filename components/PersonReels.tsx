@@ -9,6 +9,7 @@ import {
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import useActiveList from "@/hooks/useActiveList";
 
 interface VideoPostProps {
   url: string;
@@ -34,6 +35,7 @@ interface UserWithInterestsLocationReason {
 
 export function PersonReels({ following }: { following: UserWithInterestsLocationReason }) {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -118,6 +120,19 @@ export function PersonReels({ following }: { following: UserWithInterestsLocatio
             className="absolute right-2 top-1/2 transform -translate-y-1/2 md:right-[-4rem] md:top-1/2 md:transform md:-translate-y-1/2 rounded-full text-white"
         />
       </Link>
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+        }
+        .pulse {
+          animation: pulse 0.8s infinite;
+        }
+      `}</style>
     </div>
   );
 }

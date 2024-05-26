@@ -8,8 +8,11 @@ import {
 } from "@/components/ui/popover"
 import { BiSolidMessageRounded } from "react-icons/bi"
 import { CommentsScrollArea } from "./CommentsScrollArea"
+import useActiveList from "@/hooks/useActiveList"
 
 export function ReelComments({ videoId, following }: { videoId: string, following: User_with_interests_location_reason }) {
+  
+
   return (
     <Popover>
       <PopoverTrigger asChild>

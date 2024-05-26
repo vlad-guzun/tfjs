@@ -135,7 +135,7 @@ export function CommentsScrollArea({
         </div>
         {showEmojiPicker && (
           <div className="absolute bottom-12 left-2 z-50 shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
-            <EmojiPicker
+            <EmojiPicker width={300} height={400}
               onEmojiClick={handleEmojiClick}
               theme={Theme.DARK}
               emojiStyle={EmojiStyle.TWITTER} 
