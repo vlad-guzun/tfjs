@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import { CommentOptionPopover } from "./CommentOptionPopover"; 
 import { IoHeart } from "react-icons/io5";
+import { Textarea } from "./ui/textarea";
 
 type CommentProps = {
   comment: string;
@@ -108,7 +109,7 @@ export function CommentsScrollArea({
       <div className="absolute bottom-0 left-0 right-0 bg-black border-t p-2">
         <div className="flex items-center space-x-2">
           <Input
-            className="w-full bg-black text-white border border-slate-800"
+            className="w-full bg-black text-white border border-slate-800 resize-none max-h-8"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Add a comment..."

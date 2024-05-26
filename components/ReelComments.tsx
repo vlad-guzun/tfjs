@@ -17,7 +17,7 @@ export function ReelComments({ videoId, following }: { videoId: string, followin
           <BiSolidMessageRounded size={22} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[230px] bg-black border border-slate-800 shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
+      <PopoverContent className="w-[240px] bg-black border border-slate-800 shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
         <CommentsScrollArea videoId={videoId} following={following} />
       </PopoverContent>
     </Popover>
