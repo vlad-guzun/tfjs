@@ -76,3 +76,9 @@ declare type VideoPostProps = {
     profile_photo: string,
 
 }
+
+declare type CommentProps = {
+  comment: string;
+  commenter_id: string;
+  createdAt: Date;
+};

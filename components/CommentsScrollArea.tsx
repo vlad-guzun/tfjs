@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState, useRef } from "react";
 import { getAllCommentsFromAVideo, writeComment } from "@/lib/actions/post.action";
 import { useUser } from "@clerk/nextjs";
-import { Plus } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 
 type CommentProps = {
@@ -57,8 +57,13 @@ export function CommentsScrollArea({
           <h4 className="mb-4 text-sm font-medium leading-none">Comments</h4>
           {comments.map((comment, index) => (
             <div key={index} className="mb-4">
-              <div className="text-sm">{comment.comment}</div>
-              <Separator className="my-2 border-b border-b-slate-800" />
+              <div className="flex justify-between items-start gap-3">
+                <div className="text-sm break-words max-w-[150px]">
+                  {comment.comment}
+                </div>
+                <Heart size={15} color="white" className="hover:text-red-500" />
+              </div>
+              <Separator className="w-full my-2 mt-2 border border-slate-800" />
             </div>
           ))}
         </div>
