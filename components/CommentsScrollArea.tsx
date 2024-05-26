@@ -4,12 +4,16 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState, useRef } from "react";
 import { getAllCommentsFromAVideo, writeComment } from "@/lib/actions/post.action";
 import { useUser } from "@clerk/nextjs";
-import { Heart, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "./ui/button";
+import Image from "next/image";
+import { CommentOptionPopover } from "./CommentOptionPopover"; 
+import { IoHeart } from "react-icons/io5";
 
 type CommentProps = {
   comment: string;
   commenter_id: string;
+  commenter_photo: string;
   createdAt: Date;
 };
 
@@ -22,6 +26,7 @@ export function CommentsScrollArea({
 }) {
   const [comment, setComment] = useState<string>("");
   const [comments, setComments] = useState<CommentProps[]>([]);
+  const [likedComments, setLikedComments] = useState<{[key: number]: boolean}>({});
   const { user } = useUser();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -29,13 +34,16 @@ export function CommentsScrollArea({
     const fetchComments = async () => {
       const comments = await getAllCommentsFromAVideo(videoId, following?.clerkId);
       setComments(comments);
+      if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+      }
     };
     fetchComments();
   }, [videoId, following?.clerkId]);
 
   const handleCommentSubmit = async () => {
     if (!comment) return;
-    await writeComment(videoId, user?.id, comment, following?.clerkId);
+    await writeComment(videoId, user?.id, comment, user?.imageUrl, following?.clerkId);
     setComment("");
     const updatedComments = await getAllCommentsFromAVideo(videoId, following?.clerkId);
     setComments(updatedComments);
@@ -47,8 +55,16 @@ export function CommentsScrollArea({
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.style.paddingBottom = "4rem"; 
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, []);
+  }, [comments]);
+
+  const toggleLike = (index: number) => {
+    setLikedComments((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   return (
     <div className="relative h-72 w-full rounded-md border bg-black border-none">
@@ -56,14 +72,35 @@ export function CommentsScrollArea({
         <div className="p-4">
           <h4 className="mb-4 text-sm font-medium leading-none">Comments</h4>
           {comments.map((comment, index) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-start gap-3">
-                <div className="text-sm break-words max-w-[150px]">
-                  {comment.comment}
+            <div key={index} className="mb-4 relative group">
+              <div className="flex gap-3 items-start">
+                <div className="relative flex-grow text-sm break-words max-w-[150px]">
+                  <Image
+                    src={comment.commenter_photo!}
+                    alt="commenter"
+                    width={15}
+                    height={15}
+                    className="absolute top-0 left-0 rounded-full"
+                  />
+                  <div className="ml-6 font-serif">
+                    {comment.comment}
+                  </div>
                 </div>
-                <Heart size={15} color="white" className="hover:text-red-500" />
+                <div className="flex flex-col items-center space-y-1">
+                  <IoHeart 
+                    size={13} 
+                    color={likedComments[index] ? "red" : "white"} 
+                    className="cursor-pointer"
+                    onClick={() => toggleLike(index)}
+                  />
+                  <div className="">
+                    <CommentOptionPopover />
+                  </div>
+                </div>
               </div>
-              <Separator className="w-full my-2 mt-2 border border-slate-800" />
+              {index < comments.length - 1 && (
+                <Separator className="w-full my-2 mt-2 border border-slate-800" />
+              )}
             </div>
           ))}
         </div>

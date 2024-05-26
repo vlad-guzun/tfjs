@@ -55,7 +55,7 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
     }
   }
 
-  export async function writeComment(videoId: string, commenter: string | undefined, comment: string, user_which_received_comment: string | undefined) {
+  export async function writeComment(videoId: string, commenter: string | undefined, comment: string, commenter_photo: string | undefined, user_which_received_comment: string | undefined) {
     try {
       await connectToDatabase();
   
@@ -65,6 +65,7 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       const commentObj = {
         comment: comment,
         commenter_id: commenter,
+        commenter_photo: commenter_photo,
         createdAt: new Date()
       };
   

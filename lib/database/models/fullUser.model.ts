@@ -74,6 +74,7 @@ const FullUserSchema = new Schema({
           comments: [
             {
               commenter: String,
+              commenter_photo: String,
               comment: String,
               createdAt: {
                 type: Date,

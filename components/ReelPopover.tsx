@@ -27,7 +27,7 @@ export function ReelPopover({ following,videoId }: {following: User_with_interes
           <Image className="rounded-full" src={following?.photo} height={20} width={20} alt="photo" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 h-[480px] bg-black border border-slate-800">
+      <PopoverContent className="w-64 h-[480px] bg-black border border-slate-800 shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
         <PersonReels following={following} />
       </PopoverContent>
     </Popover>

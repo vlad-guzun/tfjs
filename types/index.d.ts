@@ -55,6 +55,7 @@ declare type movie_with_embedding = {
       video_id: string,
       comments?: {
         commenter: string,
+        commenter_photo: string,
         comment: string,
       }[],
       createdAt: Date
@@ -80,5 +81,6 @@ declare type VideoPostProps = {
 declare type CommentProps = {
   comment: string;
   commenter_id: string;
+  commenter_photo: string | undefined;
   createdAt: Date;
 };
