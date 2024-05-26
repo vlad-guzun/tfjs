@@ -70,6 +70,17 @@ const FullUserSchema = new Schema({
           title: String,
           url: String,
           profile_photo: String,
+          video_id: String,
+          comments: [
+            {
+              commenter: String,
+              comment: String,
+              createdAt: {
+                type: Date,
+                default: Date.now()
+              }
+            }
+          ],
           createdAt: {
             type: Date,
             default: Date.now()

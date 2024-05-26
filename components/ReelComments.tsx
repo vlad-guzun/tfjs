@@ -9,14 +9,14 @@ import {
 import { BiSolidMessageRounded } from "react-icons/bi"
 import { CommentsScrollArea } from "./CommentsScrollArea"
 
-export function ReelComments() {
+export function ReelComments({videoId,following}: {videoId:string, following: User_with_interests_location_reason}) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button className="absolute right-[17px] sm:right-[-16.5px] top-[54%] transform -translate-y-1/2 mr-4 text-white"><BiSolidMessageRounded size={22}/></Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 ">
-            <CommentsScrollArea />
+      <PopoverContent className="w-[230px] bg-black border border-slate-800">
+            <CommentsScrollArea videoId={videoId} following={following} />
       </PopoverContent>
     </Popover>
   )

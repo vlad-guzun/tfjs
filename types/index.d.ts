@@ -52,6 +52,11 @@ declare type movie_with_embedding = {
       title: string,
       url: string,
       profile_photo: string,
+      video_id: string,
+      comments?: {
+        commenter: string,
+        comment: string,
+      }[],
       createdAt: Date
     }[],
     lastSeen?: Date

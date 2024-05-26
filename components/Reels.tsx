@@ -114,9 +114,9 @@ export function CarouselOrientation() {
                       }`}
                       size={25}
                     />
-                    <ReelComments />
+                    <ReelComments videoId={post.video_id} following={following}/>
                     <div className="absolute bottom-[60px] right-[35px] sm:right-[0px]">
-                      <ReelPopover following={following}/>
+                      <ReelPopover following={following} videoId={post.video_id}/>
                     </div>
                     <p className="absolute bottom-[-1] left-5 text-white p-2 rounded-md font-serif">{post.title}</p>
                   </CardContent>

@@ -6,32 +6,16 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { PersonReels } from "./PersonReels";
 
-interface UserWithInterestsLocationReason {
-  clerkId: string;
-  email: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  photo: string;
-  interests: string;
-  location: string;
-  reasonForJoining: string;
-  following?: string[];
-  feedback?: any[];
-  text_posts?: any[];
-  video_posts?: { url: string; title: string }[];
-  lastSeen?: Date;
-}
 
-interface ReelPopoverProps {
-  following: UserWithInterestsLocationReason;
-}
 
-export function ReelPopover({ following }: ReelPopoverProps) {
+
+
+export function ReelPopover({ following,videoId }: {following: User_with_interests_location_reason,videoId:string}) {
   useEffect(() => {
     const fetchVideos = async () => {
       const videos = await getAllVideosById(following?.clerkId);
       console.log(videos);
+      console.log(videoId);
     };
     fetchVideos();
   }, [following?.clerkId]);
