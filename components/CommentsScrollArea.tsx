@@ -10,6 +10,7 @@ import Image from "next/image";
 import { CommentOptionPopover } from "./CommentOptionPopover"; 
 import { IoHeart } from "react-icons/io5";
 import { Textarea } from "./ui/textarea";
+import EmojiPicker, { EmojiClickData, Theme, EmojiStyle } from 'emoji-picker-react';
 
 type CommentProps = {
   comment: string;
@@ -28,6 +29,7 @@ export function CommentsScrollArea({
   const [comment, setComment] = useState<string>("");
   const [comments, setComments] = useState<CommentProps[]>([]);
   const [likedComments, setLikedComments] = useState<{[key: number]: boolean}>({});
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const { user } = useUser();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +69,16 @@ export function CommentsScrollArea({
     }));
   };
 
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    setComment((prev) => prev + emojiData.emoji);
+    setShowEmojiPicker(false); 
+  };
+
+  const handleCopyComment = (comment: string) => {
+    navigator.clipboard.writeText(comment);
+    alert('Comment copied to clipboard');
+  };
+
   return (
     <div className="relative h-72 w-full rounded-md border bg-black border-none">
       <ScrollArea ref={scrollAreaRef} className="h-full bg-black text-white pb-20">
@@ -75,7 +87,7 @@ export function CommentsScrollArea({
           {comments.map((comment, index) => (
             <div key={index} className="mb-4 relative group">
               <div className="flex gap-3 items-start">
-                <div className="relative flex-grow text-sm break-words max-w-[150px]">
+                <div className="relative flex-grow text-sm break-words max-w-[220px]">
                   <Image
                     src={comment.commenter_photo!}
                     alt="commenter"
@@ -95,7 +107,7 @@ export function CommentsScrollArea({
                     onClick={() => toggleLike(index)}
                   />
                   <div className="">
-                    <CommentOptionPopover />
+                    <CommentOptionPopover  />
                   </div>
                 </div>
               </div>
@@ -108,8 +120,11 @@ export function CommentsScrollArea({
       </ScrollArea>
       <div className="absolute bottom-0 left-0 right-0 bg-black border-t p-2">
         <div className="flex items-center space-x-2">
+          <Button className="flex-shrink-0" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+            😁
+          </Button>
           <Input
-            className="w-full bg-black text-white border border-slate-800 resize-none max-h-8"
+            className="w-full bg-black text-white border border-slate-800 resize-none max-h-10 font-serif overflow-auto scrollbar-hide"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Add a comment..."
@@ -118,6 +133,15 @@ export function CommentsScrollArea({
             <Plus size={20} color="white" className="hover:text-slate-600" />
           </Button>
         </div>
+        {showEmojiPicker && (
+          <div className="absolute bottom-12 left-2 z-50 shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
+            <EmojiPicker
+              onEmojiClick={handleEmojiClick}
+              theme={Theme.DARK}
+              emojiStyle={EmojiStyle.TWITTER} 
+            />
+          </div>
+        )}
       </div>
     </div>
   );
