@@ -32,12 +32,12 @@ import {
           <AlertDialogHeader className="w-full">
             <AlertDialogFooter className="absolute top-2 right-0">
               <AlertDialogCancel>
-                <X className="hover:text-red-700" size={15} />
+                <X color="white" size={15} />
               </AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogHeader>
-          <div className="flex-grow flex flex-col justify-center items-center w-full relative z-10">
-            <SignInButton />
+          <div className="flex-grow flex flex-col justify-center items-center w-full relative z-10 text-white">
+            <SignInButton/>
           </div>
           <div className="absolute inset-0 flex justify-center items-center z-0 pointer-events-none">
             <svg
