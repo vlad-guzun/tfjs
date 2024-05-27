@@ -28,15 +28,15 @@ import {
         <AlertDialogTrigger asChild>
           <Button className="text-white">{text}</Button>
         </AlertDialogTrigger>
-        <AlertDialogContent className="absolute shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] bg-black flex flex-col justify-center items-center lg:h-[90vh] lg:w-[60vh] md:h-[80vh] md:w-[50vh] h-[70vh] w-[40vh]">
+        <AlertDialogContent className="absolute bg-black flex flex-col justify-center items-center lg:h-[90vh] lg:w-[60vh] md:h-[80vh] md:w-[50vh] h-[70vh] w-[40vh]">
           <AlertDialogHeader className="w-full">
-            <AlertDialogFooter className="absolute top-4 right-2">
+            <AlertDialogFooter className="absolute top-2 right-0">
               <AlertDialogCancel>
-                <p className="text-white hover:text-slate-400">X</p>
+                <X className="hover:text-red-700" size={15} />
               </AlertDialogCancel>
             </AlertDialogFooter>
           </AlertDialogHeader>
-          <div className="flex-grow flex flex-col justify-center items-center w-full relative z-10 text-white hover:text-slate-400">
+          <div className="flex-grow flex flex-col justify-center items-center w-full relative z-10">
             <SignInButton />
           </div>
           <div className="absolute inset-0 flex justify-center items-center z-0 pointer-events-none">
@@ -59,17 +59,17 @@ import {
                   d="M 110, 110 m -65, 0 a 65,65 0 1,1 130,0 a 65,65 0 1,1 -130,0"
                 />
               </defs>
-              <text fill="white" fontSize="6" fontFamily="serif" className="subtle-glow outermost-text">
+              <text fill="white" fontSize="6" fontFamily="serif" className="outermost-text">
                 <textPath href="#outermostTextCircle" startOffset="0%">
                   {outermostRepeatedText}
                 </textPath>
               </text>
-              <text fill="white" fontSize="6" fontFamily="serif" className="subtle-glow outer-text">
+              <text fill="white" fontSize="6" fontFamily="serif" className="outer-text">
                 <textPath href="#outerTextCircle" startOffset="0%">
                   {repeatedText}
                 </textPath>
               </text>
-              <text fill="white" fontSize="6" fontFamily="serif" className="subtle-glow inner-text">
+              <text fill="white" fontSize="6" fontFamily="serif" className="inner-text">
                 <textPath href="#innerTextCircle" startOffset="0%">
                   {innerRepeatedText}
                 </textPath>
@@ -79,18 +79,21 @@ import {
         </AlertDialogContent>
         <style jsx>{`
           .outermost-text {
-            animation: rotate 24s linear infinite;
+            animation: rotate 60s linear infinite;
             transform-origin: center;
+            text-shadow: 0 0 5px white, 0 0 10px rgba(255, 255, 255, 0.7);
           }
   
           .outer-text {
-            animation: rotate 20s linear infinite;
+            animation: rotate 50s linear infinite;
             transform-origin: center;
+            text-shadow: 0 0 7px white, 0 0 15px rgba(255, 255, 255, 0.8);
           }
       
           .inner-text {
-            animation: rotate-slow 15s linear infinite;
+            animation: rotate-slow 40s linear infinite;
             transform-origin: center;
+            text-shadow: 0 0 10px white, 5px 5px 20px rgba(255, 255, 255, 0.9);
           }
       
           @keyframes rotate {
