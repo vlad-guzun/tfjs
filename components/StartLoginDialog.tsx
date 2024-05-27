@@ -45,7 +45,7 @@ import {
                   d="M 110, 110 m -75, 0 a 75,75 0 1,1 150,0 a 75,75 0 1,1 -150,0"
                 />
               </defs>
-              <text fill="white" fontSize="6" fontFamily="serif" className="outer-text">
+              <text fill="white" fontSize="10" fontFamily="serif" className="outer-text">
                 <textPath href="#outerTextCircle" startOffset="0%">
                   {repeatedText}
                 </textPath>

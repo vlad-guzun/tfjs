@@ -13,13 +13,38 @@ import { useEffect, useRef, useState } from "react";
 import { IoIosHeart } from "react-icons/io";
 import { ReelCommentsStart } from "./ReelCommentsStart";
 import { ReelPopoverStart } from "./ReelPopoverStart";
+import useActiveList from "@/hooks/useActiveList";
+import { PulsatingCircle } from "./PulsingCircle";
 
+// Utility function to convert date to relative time
+const timeAgo = (date: string) => {
+  const now = new Date();
+  const past = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
+  const units = [
+    { name: 'w', seconds: 604800 },
+    { name: 'd', seconds: 86400 },
+    { name: 'h', seconds: 3600 },
+    { name: 'm', seconds: 60 },
+    { name: 's', seconds: 1 },
+  ];
+
+  for (const unit of units) {
+    const quotient = Math.floor(diffInSeconds / unit.seconds);
+    if (quotient > 0) {
+      return `${quotient}${unit.name}`;
+    }
+  }
+
+  return 'just now';
+};
 
 export function StartReels() {
   const [users, setUsers] = useState<User_with_interests_location_reason[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [liked, setLiked] = useState<boolean[]>([]);
+  const { members } = useActiveList();
 
   useEffect(() => {
     const getUsers = async () => {
@@ -75,6 +100,7 @@ export function StartReels() {
       return newLiked;
     });
   };
+  console.log(members);
 
   return (
     <Carousel
@@ -85,26 +111,32 @@ export function StartReels() {
       className="w-full max-w-md"
     >
       <CarouselContent className="-mt-1 h-[730px]">
-        {users?.map((user) =>
-          user.video_posts?.map((reel, index) => (
-            <CarouselItem key={reel.video_id} className="pt-1 md:basis-1/2">
-              <div className="p-10 h-full my-5 relative">
-                <Card className="h-full bg-black border-none ">
-                  <CardContent className="h-full flex items-center justify-center px-8 relative">
-                    <video
-                      ref={(el) => {
-                        videoRefs.current[index] = el;
-                      }}
-                      className="h-full w-full object-cover shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] rounded-md"
-                      src={reel.url}
-                      playsInline
-                      loop
-                      controls={false}
-                      onClick={handleVideoClick}
-                    ></video>
+        {users?.map((user) => {
+          const isUserActive = members.indexOf(user.clerkId) !== -1;
+          return user.video_posts?.map((reel, index) => (
+            <CarouselItem key={reel.video_id} className="pt-1">
+              <div className="h-full relative">
+                <Card className="h-full bg-black border-none">
+                  <CardContent className="h-full flex items-center justify-center relative">
+                    <div className="w-[360px] h-[640px]">
+                      <video
+                        ref={(el) => {
+                          videoRefs.current[index] = el;
+                        }}
+                        className="w-full h-full object-cover shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] rounded-md"
+                        src={reel.url}
+                        playsInline
+                        loop
+                        controls={false}
+                        onClick={handleVideoClick}
+                      ></video>
+                      <p className="font-serif text-md mt-1 text-white">
+                        {reel.title} • {timeAgo(String(reel.createdAt))}
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
-                <div className="absolute top-1/2 right-0 ">
+                <div className="absolute top-1/2 md:right-0 right-12 transform -translate-y-1/2">
                   <IoIosHeart
                     onClick={() => toggleLike(index)}
                     className={`cursor-pointer ${
@@ -113,17 +145,20 @@ export function StartReels() {
                     size={25}
                   />
                   <div className="mt-6">
-                   <ReelCommentsStart videoId={reel.video_id} following={user} />
-                   </div>
+                    <ReelCommentsStart videoId={reel.video_id} following={user} />
+                  </div>
                 </div>
-                <div className="absolute bottom-[60px] right-[35px] sm:right-[0px] ">
-                      <ReelPopoverStart following={user} videoId={reel.video_id}/>
+                <div className="absolute bottom-[55px] lg:right-2 sm:right-[0px] right-[51px]">
+                  <ReelPopoverStart following={user} videoId={reel.video_id} />
+                    <div className="absolute top-0 right-0 text-white">
+                      {isUserActive && <PulsatingCircle />}
+                    </div>
+                  
                 </div>
-               <p className="font-serif text-md absolute ml-8 text-white mb-4">{reel.title}</p>
               </div>
             </CarouselItem>
-          ))
-        )}
+          ));
+        })}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />
