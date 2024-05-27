@@ -114,7 +114,7 @@ export function StartReels() {
         {users?.map((user) => {
           const isUserActive = members.indexOf(user.clerkId) !== -1;
           return user.video_posts?.map((reel, index) => (
-            <CarouselItem key={reel.video_id} className="pt-1">
+            <CarouselItem key={reel.video_id} className="pb-12">
               <div className="h-full relative">
                 <Card className="h-full bg-black border-none">
                   <CardContent className="h-full flex items-center justify-center relative">
