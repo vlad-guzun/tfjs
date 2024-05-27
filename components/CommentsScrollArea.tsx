@@ -11,6 +11,7 @@ import { CommentOptionPopover } from "./CommentOptionPopover";
 import { IoHeart } from "react-icons/io5";
 import { Textarea } from "./ui/textarea";
 import EmojiPicker, { EmojiClickData, Theme, EmojiStyle } from 'emoji-picker-react';
+import StartLoginModal from "./StartLoginModal";
 
 type CommentProps = {
   comment: string;
@@ -32,6 +33,7 @@ export function CommentsScrollArea({
   const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const { user } = useUser();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -45,6 +47,11 @@ export function CommentsScrollArea({
   }, [videoId, following?.clerkId]);
 
   const handleCommentSubmit = async () => {
+    if (!user) {
+      setShowModal(true);
+      return;
+    }
+
     if (!comment) return;
     await writeComment(videoId, user?.id, comment, user?.imageUrl, following?.clerkId);
     setComment("");
@@ -143,6 +150,9 @@ export function CommentsScrollArea({
           </div>
         )}
       </div>
+      {showModal && (
+        <StartLoginModal setShowModal={setShowModal} text={"sign in to comment"} />
+      )}
     </div>
   );
 }

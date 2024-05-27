@@ -98,3 +98,27 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       throw new Error("Failed to get comments");
     }
   }
+
+  export async function getAllTheUsers(){
+    try{
+      await connectToDatabase();
+      const users = await FullUser.find({});
+      return JSON.parse(JSON.stringify(users));
+    }catch(error){
+      console.log(error);
+    }
+  }
+
+  export async function getAllReels() {
+    try {
+      await connectToDatabase();
+  
+      const users = await FullUser.find({});
+      const reels = users.map((user) => user.video_posts).flat();
+  
+      return JSON.parse(JSON.stringify(reels));
+    } catch (error) {
+      console.log(error);
+      throw new Error("Failed to get reels");
+    }
+  }
