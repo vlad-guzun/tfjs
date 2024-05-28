@@ -34,7 +34,16 @@ export default function Home() {
   const router = useRouter();
   const { members } = useActiveList();
 
+
+
   useEffect(() => {
+    if (!user) {
+      router.push("/start2");
+    }
+  },[user]);
+
+  useEffect(() => {
+
     const getSession = async () => {
       if (user && isLoaded) {
         const sessions = await user.getSessions();

@@ -157,7 +157,6 @@ export function UploadReel() {
       <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
         <DialogContent className="sm:max-w-[300px] md:max-w-[325px] lg:max-w-[425px] h-[70vh] bg-black shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
           <DialogHeader>
-            <DialogTitle className="text-white">Preview your reel</DialogTitle>
           </DialogHeader>
           <div className="grid">
             <div className="flex flex-col items-center">
