@@ -81,6 +81,29 @@ export function CarouselOrientation() {
     });
   };
 
+  const timeAgo = (date: string) => {
+    const now = new Date();
+    const past = new Date(date);
+    const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
+  
+    const units = [
+      { name: 'w', seconds: 604800 },
+      { name: 'd', seconds: 86400 },
+      { name: 'h', seconds: 3600 },
+      { name: 'm', seconds: 60 },
+      { name: 's', seconds: 1 },
+    ];
+  
+    for (const unit of units) {
+      const quotient = Math.floor(diffInSeconds / unit.seconds);
+      if (quotient > 0) {
+        return `${quotient}${unit.name}`;
+      }
+    }
+  
+    return 'just now';
+  };
+
   return (
     <Carousel
       opts={{
@@ -119,7 +142,7 @@ export function CarouselOrientation() {
                     <div className="absolute bottom-[60px] right-[35px] sm:right-[0px] ">
                       <ReelPopover following={following} videoId={post.video_id}/>
                     </div>
-                    <p className="absolute bottom-[-1] left-5 text-white p-2 rounded-md font-serif">{post.title}</p>
+                    <p className="absolute bottom-[-1] left-5 text-white p-2 rounded-md font-serif">{post.title}•{timeAgo(String(post.createdAt))}</p>
                   </CardContent>
                 </Card>
               </CarouselItem>
