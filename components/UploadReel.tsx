@@ -87,9 +87,7 @@ export function UploadReel() {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="ghost" className="p-2 rounded-full bg-black text-white">
-            <Plus className="w-6 h-6 text-white" />
-          </Button>
+            <Plus className="w-6 h-6 text-white" color="white" />
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] h-[60vh] bg-black shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
           <UploadButton
@@ -107,7 +105,7 @@ export function UploadReel() {
       <Dialog open={isTitleModalOpen} onOpenChange={setIsTitleModalOpen}>
         <DialogContent className="sm:max-w-[425px] h-[50vh] bg-black shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
           <DialogHeader>
-            <DialogTitle className="text-white">Add Title to Reel</DialogTitle>
+            <DialogTitle className="text-white">Give your reel a cool name</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-1 gap-4">
@@ -148,7 +146,7 @@ export function UploadReel() {
               className="bg-black text-white hover:bg-gray-800 absolute right-1 top-3 hover:text-slate-400"
               onClick={() => setIsTitleModalOpen(false)}
             >
-              <X size={15} />
+              <X size={15} color="white"/>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -157,6 +155,7 @@ export function UploadReel() {
       <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
         <DialogContent className="sm:max-w-[300px] md:max-w-[325px] lg:max-w-[425px] h-[70vh] bg-black shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
           <DialogHeader>
+            <DialogTitle className="text-white">Preview your reel</DialogTitle>
           </DialogHeader>
           <div className="grid">
             <div className="flex flex-col items-center">
@@ -185,7 +184,7 @@ export function UploadReel() {
               className="bg-black text-white hover:bg-gray-800 absolute right-1 top-3 hover:text-slate-400"
               onClick={() => setIsPreviewModalOpen(false)}
             >
-              <X size={15} />
+              <X size={15} color="white"/>
             </Button>
           </DialogFooter>
         </DialogContent>
