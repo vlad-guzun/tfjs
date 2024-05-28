@@ -15,6 +15,7 @@ import { IoIosHeart } from "react-icons/io";
 import { ReelPopover } from "./ReelPopover";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import { ReelComments } from "./ReelComments";
+import { UploadReels } from "../components/UploadReels";
 
 export function CarouselOrientation() {
   const { user } = useUser();
@@ -86,7 +87,7 @@ export function CarouselOrientation() {
         align: "start",
       }}
       orientation="vertical"
-      className="w-full max-w-md bg-black border-none"
+      className="w-full max-w-md bg-black border-none relative"
     >
       <CarouselContent className="-mt-1 h-screen border-none bg-black">
         {followings?.map((following, followingIndex) =>
@@ -126,6 +127,9 @@ export function CarouselOrientation() {
           })
         )}
       </CarouselContent>
+      <div className="absolute lg:-left-1/3 lg:top-1/2 md:-left-1/4 md:top-1/2 top-0 -right-2 ">
+        <UploadReels />
+      </div>
       <CarouselPrevious />
       <CarouselNext />
     </Carousel>

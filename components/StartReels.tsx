@@ -14,7 +14,7 @@ import { IoIosHeart } from "react-icons/io";
 import { ReelCommentsStart } from "./ReelCommentsStart";
 import { ReelPopoverStart } from "./ReelPopoverStart";
 import useActiveList from "@/hooks/useActiveList";
-import { UploadReel } from "./UploadReel";
+import { UploadReel } from "./UploadStartReel";
 import { Plus } from "lucide-react";
 
 const timeAgo = (date: string) => {

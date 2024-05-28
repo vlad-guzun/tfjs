@@ -138,3 +138,31 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       console.log(error);
     }
   }
+
+
+  //exact ca createVideoPost , phd voi schimab ceva
+  export async function createReel(title: string, url: string, clerkId: string | undefined, profile_photo: string | undefined) {
+    try{
+  
+      await connectToDatabase();
+      
+      const user = await FullUser.findOne({clerkId});
+      if(!user) throw new Error("User not found");
+
+      const video_post = {
+        title: title,
+        url: url,
+        video_id: nanoid(5),
+        profile_photo: profile_photo,
+      }
+
+      await user.video_posts.push(video_post);
+      await user.save();
+
+      return JSON.parse(JSON.stringify(user));
+      
+  
+    }catch(error){
+      console.log(error);
+    }
+  }
