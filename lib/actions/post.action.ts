@@ -1,6 +1,7 @@
 "use server";
 
 import { connectToDatabase } from "../database/connectToDatabase";
+import StartReel from "../database/models/Reel.model";
 import FullUser from "../database/models/fullUser.model";
 import {nanoid} from "nanoid";
 
@@ -120,5 +121,20 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
     } catch (error) {
       console.log(error);
       throw new Error("Failed to get reels");
+    }
+  }
+
+  export async function addStartReel(video: string,title: string,id: string){
+    try{
+      await connectToDatabase();
+      const reel = new StartReel({
+        reel: video,
+        title: title,
+        id: id
+      });
+      await reel.save();
+      return JSON.parse(JSON.stringify(reel));
+    }catch(error){
+      console.log(error);
     }
   }

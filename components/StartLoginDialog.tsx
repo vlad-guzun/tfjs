@@ -12,8 +12,9 @@ import {
   import { Button } from "@/components/ui/button";
   import { SignInButton } from "@clerk/nextjs";
   import { X } from "lucide-react";
+import React from "react";
   
-  export function StartLoginDialog({ text }: { text: string }) {
+  export function StartLoginDialog({ text }: { text: React.ReactNode }) {
     const repeatedText =
       "post • discover • like profiles • learn • relax • watch reels • send messages • follow people • explore • connect • share • enjoy • create • interact • network • engage • participate • join • connect • experience • develop • innovate • grow • find friends • meet new people • chat • stay updated • stay connected • follow trends • ";
   

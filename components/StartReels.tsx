@@ -14,9 +14,9 @@ import { IoIosHeart } from "react-icons/io";
 import { ReelCommentsStart } from "./ReelCommentsStart";
 import { ReelPopoverStart } from "./ReelPopoverStart";
 import useActiveList from "@/hooks/useActiveList";
-import { PulsatingCircle } from "./PulsingCircle";
+import { UploadReel } from "./UploadReel";
+import { Plus } from "lucide-react";
 
-// Utility function to convert date to relative time
 const timeAgo = (date: string) => {
   const now = new Date();
   const past = new Date(date);
@@ -103,65 +103,66 @@ export function StartReels() {
   console.log(members);
 
   return (
-    <Carousel
-      opts={{
-        align: "start",
-      }}
-      orientation="vertical"
-      className="w-full max-w-md"
-    >
-      <CarouselContent className="-mt-1 h-[730px]">
-        {users?.map((user) => {
-          const isUserActive = members.indexOf(user.clerkId) !== -1;
-          return user.video_posts?.map((reel, index) => (
-            <CarouselItem key={reel.video_id} className="pb-12">
-              <div className="h-full relative">
-                <Card className="h-full bg-black border-none">
-                  <CardContent className="h-full flex items-center justify-center relative">
-                    <div className="w-[360px] h-[640px]">
-                      <video
-                        ref={(el) => {
-                          videoRefs.current[index] = el;
-                        }}
-                        className="w-full h-full object-cover shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] rounded-md"
-                        src={reel.url}
-                        playsInline
-                        loop
-                        controls={false}
-                        onClick={handleVideoClick}
-                      ></video>
-                      <p className="font-serif text-md mt-1 text-white">
-                        {reel.title} • {timeAgo(String(reel.createdAt))}
-                      </p>
+    <div className="relative">
+      <div className="fixed lg:left-1/4 lg:ml-2 top-1/2 transform -translate-y-1/2 z-10">
+        <UploadReel />
+      </div>
+      <Carousel
+        opts={{
+          align: "start",
+        }}
+        orientation="vertical"
+        className="w-full max-w-md"
+      >
+        <CarouselContent className="-mt-1 h-[730px]">
+          {users?.map((user) => {
+            return user.video_posts?.map((reel, index) => (
+              <CarouselItem key={reel.video_id} className="pb-12">
+                <div className="h-full relative">
+                  <Card className="h-full bg-black border-none">
+                    <CardContent className="h-full flex items-center justify-center relative">
+                      <div className="w-[360px] h-[640px]">
+                        <video
+                          ref={(el) => {
+                            videoRefs.current[index] = el;
+                          }}
+                          className="w-full h-full object-cover shadow-[0_0_10px_2px_rgba(255,255,255,0.6)] rounded-md"
+                          src={reel.url}
+                          playsInline
+                          loop
+                          controls={false}
+                          onClick={handleVideoClick}
+                        ></video>
+                        <p className="font-serif text-md mt-1 text-white">
+                          {reel.title} • {timeAgo(String(reel.createdAt))}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <div className="absolute top-1/2 md:right-0 right-14 transform -translate-y-1/2">
+                    <IoIosHeart
+                      onClick={() => toggleLike(index)}
+                      className={`cursor-pointer ${
+                        liked[index] ? 'text-red-500' : 'text-white'
+                      }`}
+                      size={25}
+                    />
+                    <div className="mt-6">
+                      <ReelCommentsStart videoId={reel.video_id} following={user} />
                     </div>
-                  </CardContent>
-                </Card>
-                <div className="absolute top-1/2 md:right-0 right-12 transform -translate-y-1/2">
-                  <IoIosHeart
-                    onClick={() => toggleLike(index)}
-                    className={`cursor-pointer ${
-                      liked[index] ? 'text-red-500' : 'text-white'
-                    }`}
-                    size={25}
-                  />
-                  <div className="mt-6">
-                    <ReelCommentsStart videoId={reel.video_id} following={user} />
                   </div>
-                </div>
-                <div className="absolute bottom-[55px] lg:right-2 sm:right-[0px] right-[51px]">
-                  <ReelPopoverStart following={user} videoId={reel.video_id} />
-                    <div className="absolute top-0 right-0 text-white">
-                      {isUserActive && <PulsatingCircle />}
-                    </div>
+                  <div className="absolute bottom-[55px] lg:right-2 sm:right-[0px] right-[51px]">
+                    <ReelPopoverStart following={user} videoId={reel.video_id} />
+                  </div>
                   
                 </div>
-              </div>
-            </CarouselItem>
-          ));
-        })}
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+              </CarouselItem>
+            ));
+          })}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    </div>
   );
 }
