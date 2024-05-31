@@ -16,12 +16,23 @@ import { ReelPopover } from "./ReelPopover";
 import { BiSolidMessageRounded } from "react-icons/bi";
 import { ReelComments } from "./ReelComments";
 import { UploadReels } from "../components/UploadReels";
+import * as mobilenet from "@tensorflow-models/mobilenet";
+import "@tensorflow/tfjs";
 
 export function CarouselOrientation() {
   const { user } = useUser();
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [liked, setLiked] = useState<boolean[]>([]);
   const [followings, setFollowings] = useState<User_with_interests_location_reason[]>([]);
+  const [model, setModel] = useState<mobilenet.MobileNet | null>(null);
+
+  useEffect(() => {
+    async function loadModel() {
+      const mobilenetModel = await mobilenet.load();
+      setModel(mobilenetModel);
+    }
+    loadModel();
+  }, []);
 
   useEffect(() => {
     async function fetchFollowings() {
@@ -73,7 +84,23 @@ export function CarouselOrientation() {
     }
   };
 
-  const toggleLike = async(index: number, postUrl: string) => {
+  const classifyImage = async (model: mobilenet.MobileNet, imageUrl: string) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = imageUrl;
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+    const predictions = await model.classify(img);
+    return predictions[0].className; // Return the highest classification
+  };
+
+  const toggleLike = async (index: number, postUrl: string) => {
+    if (!model) {
+      console.error("Model not loaded yet.");
+      return;
+    }
+
     const response = await fetch("/api/generate-screenshot", {
       method: "POST",
       headers: {
@@ -81,8 +108,22 @@ export function CarouselOrientation() {
       },
       body: JSON.stringify({ url: postUrl }),
     });
-    const data = await response.json();
-    console.log(data);
+    const screen_shots_response = await response.json();
+
+    if (screen_shots_response.status === 'success') {
+      const classificationPromises = screen_shots_response.data.map((url: string) =>
+        classifyImage(model, url)
+      );
+
+      const classifications = await Promise.all(classificationPromises);
+      const uniqueClassifications = new Set(classifications);
+      const description = Array.from(uniqueClassifications).join(", ");
+      console.log(description);
+      // const recommended_reels = await getReelRecommendations(description);
+      // console.log(recommended_reels);
+      
+    }
+
     setLiked((prevLiked) => {
       const newLiked = [...prevLiked];
       newLiked[index] = !newLiked[index];
@@ -94,7 +135,7 @@ export function CarouselOrientation() {
     const now = new Date();
     const past = new Date(date);
     const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
-  
+
     const units = [
       { name: 'w', seconds: 604800 },
       { name: 'd', seconds: 86400 },
@@ -102,14 +143,14 @@ export function CarouselOrientation() {
       { name: 'm', seconds: 60 },
       { name: 's', seconds: 1 },
     ];
-  
+
     for (const unit of units) {
       const quotient = Math.floor(diffInSeconds / unit.seconds);
       if (quotient > 0) {
         return `${quotient}${unit.name}`;
       }
     }
-  
+
     return 'just now';
   };
 
@@ -149,7 +190,7 @@ export function CarouselOrientation() {
                     />
                     <ReelComments videoId={post.video_id} following={following} />
                     <div className="absolute bottom-[60px] right-[35px] sm:right-[0px] ">
-                      <ReelPopover following={following} videoId={post.video_id}/>
+                      <ReelPopover following={following} videoId={post.video_id} />
                     </div>
                     <p className="absolute bottom-[-1] left-5 text-white p-2 rounded-md font-serif">{post.title}•{timeAgo(String(post.createdAt))}</p>
                   </CardContent>
