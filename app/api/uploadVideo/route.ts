@@ -13,13 +13,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const videoUrl = body.url;
 
+    if (!videoUrl) {
+      throw new Error('Video URL is required');
+    }
+
     // Upload the video to Cloudinary if not already hosted there
     const uploadResponse = await cloudinary.v2.uploader.upload(videoUrl, {
       resource_type: 'video',
       folder: 'sample_folder'
     });
 
-    // Assuming a maximum duration of 30 seconds for demonstration
+    if (!uploadResponse.public_id) {
+      throw new Error('Failed to upload video to Cloudinary');
+    }
+
+    // Assuming a maximum duration of 20 seconds for demonstration
     const maxDuration = 20; // You may adjust based on your needs or video metadata
     const times = Array.from({ length: maxDuration }, (_, i) => i + 1);
 
@@ -34,6 +42,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ status: 'success', data: screenshots });
   } catch (error) {
-    return NextResponse.json({ status: 'error', message: error });
+    let errorMessage = 'An unknown error occurred';
+
+    if (error instanceof SyntaxError) {
+      errorMessage = 'Invalid JSON in request body';
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    } else if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error && typeof error === 'object' && 'message' in error) {
+      errorMessage = (error as { message: string }).message;
+    }
+
+    return NextResponse.json({ status: 'error', message: errorMessage });
   }
 }
