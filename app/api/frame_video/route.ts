@@ -11,7 +11,7 @@ cloudinary.v2.config({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const videoUrl = body.videoUrl;
+    const videoUrl = "https://utfs.io/f/a4af4211-74d7-4bb3-9afb-94a1ac808759-nz8k0.mp4";
     const uploadResponse = await cloudinary.v2.uploader.upload(videoUrl, {
       resource_type: 'video',
       folder: 'sample_folder'
