@@ -50,8 +50,15 @@ export async function POST(request: NextRequest) {
       errorMessage = error.message;
     } else if (typeof error === 'string') {
       errorMessage = error;
-    } else if (error && typeof error === 'object' && 'message' in error) {
-      errorMessage = (error as { message: string }).message;
+    } else if (error && typeof error === 'object') {
+      if ('message' in error) {
+        errorMessage = (error as { message: string }).message;
+      }
+      // Handle specific error structure from your example
+      if ('code' in error && 'syscall' in error && 'path' in error) {
+        const { errno, code, syscall, path } = error as { errno: number; code: string; syscall: string; path: string };
+        errorMessage = `Error ${code} (${errno}): ${syscall} on ${path}`;
+      }
     }
 
     return NextResponse.json({ status: 'error', message: errorMessage });
