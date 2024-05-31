@@ -74,8 +74,7 @@ export function CarouselOrientation() {
   };
 
   const toggleLike = async(index: number, postUrl: string) => {
-    console.log(postUrl);
-    const response = await fetch("/api/frame_video",{
+    const response = await fetch("/api/uploadVideo",{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
