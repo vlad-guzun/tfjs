@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import cloudinary from 'cloudinary';
 
+// Configure your Cloudinary account
 cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,  
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,        
-  api_secret: process.env.CLOUDINARY_API_SECRET   
+  cloud_name: 'dlqcwi0te',
+  api_key: '235634228739685',
+  api_secret: 'p_0NcPsQTFt1r30QBVacv1gmA_c'
 });
 
 export async function POST(request: NextRequest) {
@@ -12,12 +13,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const videoUrl = body.url;
 
+    // Upload the video to Cloudinary if not already hosted there
     const uploadResponse = await cloudinary.v2.uploader.upload(videoUrl, {
       resource_type: 'video',
       folder: 'sample_folder'
     });
 
-    const maxDuration = 20;
+    // Assuming a maximum duration of 30 seconds for demonstration
+    const maxDuration = 20; // You may adjust based on your needs or video metadata
     const times = Array.from({ length: maxDuration }, (_, i) => i + 1);
 
     const screenshots = times.map(time => cloudinary.v2.url(uploadResponse.public_id, {
