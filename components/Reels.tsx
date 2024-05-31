@@ -74,17 +74,15 @@ export function CarouselOrientation() {
   };
 
   const toggleLike = async(index: number, postUrl: string) => {
-
-    const reponse = await fetch("/api/uploadVideo",{
+    const response = await fetch("/api/generate-screenshot", {
       method: "POST",
-      body: JSON.stringify({
-        url: postUrl,
-      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url: postUrl }),
     });
-
-    const data = await reponse.json();
+    const data = await response.json();
     console.log(data);
-
     setLiked((prevLiked) => {
       const newLiked = [...prevLiked];
       newLiked[index] = !newLiked[index];
