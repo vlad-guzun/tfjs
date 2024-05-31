@@ -73,19 +73,7 @@ export function CarouselOrientation() {
     }
   };
 
-  const toggleLike = async(index: number,following: User_with_interests_location_reason,postUrl: string) => {
-    console.log(postUrl);
-    const response = await fetch("/api/frame_video", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        videoUrl: postUrl,
-      }),
-    });
-    const data = await response.json();
-    console.log(data);
+  const toggleLike = (index: number) => {
     setLiked((prevLiked) => {
       const newLiked = [...prevLiked];
       newLiked[index] = !newLiked[index];
@@ -144,11 +132,11 @@ export function CarouselOrientation() {
                       onClick={handleVideoClick}
                     ></video>
                     <IoIosHeart
-                      onClick={() => toggleLike(videoIndex, following, post.url)} // Correctly formatted function call
-                        className={`absolute right-[17px] sm:right-[-18px] top-1/2 transform -translate-y-1/2 mr-4 ${
-                          liked[videoIndex] ? 'text-red-500' : 'text-white'
-                        }`}
-                        size={25}
+                      onClick={() => toggleLike(videoIndex)}
+                      className={`absolute right-[17px] sm:right-[-18px] top-1/2 transform -translate-y-1/2 mr-4 ${
+                        liked[videoIndex] ? 'text-red-500' : 'text-white'
+                      }`}
+                      size={25}
                     />
                     <ReelComments videoId={post.video_id} following={following} />
                     <div className="absolute bottom-[60px] right-[35px] sm:right-[0px] ">
