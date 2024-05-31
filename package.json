@@ -29,6 +29,7 @@
     "@uploadthing/react": "^6.5.3",
     "class-variance-authority": "^0.7.0",
     "cloudinary": "^2.2.0",
+    "cloudinary-core": "^2.13.1",
     "clsx": "^2.1.0",
     "embla-carousel-react": "^8.1.3",
     "emoji-picker-react": "^4.9.3",
