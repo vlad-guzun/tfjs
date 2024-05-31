@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from 'cloudinary';
 
-const dynamic = 'force-dynamic'
-const revalidate = 0;
 
 cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,  
-  api_key: process.env.CLOUDINARY_API_KEY,        
-  api_secret: process.env.CLOUDINARY_API_SECRET   
+  cloud_name: "dlqcwi0te",  
+  api_key: "235634228739685",        
+  api_secret: "p_0NcPsQTFt1r30QBVacv1gmA_c"   
 });
 
 export async function POST(request: NextRequest) {
