@@ -226,3 +226,39 @@ export async function getAllPersonsYouFollow(clerkId: string | undefined){
     console.log(error);
   }
 }
+
+
+
+export async function getAllUsers() {
+  try {
+    await connectToDatabase();
+
+    // Fetch all users
+    const users = await FullUser.find({});
+    if (!users) throw new Error("Users not found");
+
+    return JSON.parse(JSON.stringify(users));
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+//ALT UNDEVA NU MERGE! VEZ HUINEAUA ASTA CUMVA, DACA O MUTO IN reel.recommendation.action.ts, NU MERGE MONGOURL nu e defined!
+export async function getAllReels() {
+  try {
+    
+    await connectToDatabase();
+    
+    const users = await getAllUsers();
+    const allReels = users.flatMap((user:User_with_interests_location_reason) => user.video_posts || []);
+
+    return JSON.parse(JSON.stringify(allReels));
+    
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+
+

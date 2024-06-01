@@ -10,32 +10,35 @@ cloudinary.config({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const videoUrl = body.url;
+    const { reels } = body;
 
-    if (!videoUrl) {
-      return NextResponse.json({ status: 'error', message: 'Video URL is required' }, { status: 400 });
+    if (!reels || !Array.isArray(reels) || reels.length === 0) {
+      return NextResponse.json({ status: 'error', message: 'Reels array is required' }, { status: 400 });
     }
 
-    // Upload the video to Cloudinary if not already hosted there
-    const uploadResponse = await cloudinary.uploader.upload(videoUrl, {
-      resource_type: 'video',
-      folder: 'sample_folder'
-    });
+    const screenshotsData = await Promise.all(reels.map(async (reel: { url: string, video_id: string }) => {
+      const videoUrl = reel.url;
+      const uploadResponse = await cloudinary.uploader.upload(videoUrl, {
+        resource_type: 'video',
+        folder: 'sample_folder'
+      });
 
-    // Assuming a maximum duration of 20 seconds for demonstration
-    const maxDuration = 20; // You may adjust based on your needs or video metadata
-    const times = Array.from({ length: maxDuration }, (_, i) => i + 1);
+      const maxDuration = 5;
+      const times = Array.from({ length: maxDuration }, (_, i) => i + 1);
 
-    const screenshots = times.map(time => cloudinary.url(uploadResponse.public_id, {
-      resource_type: 'video',
-      format: 'jpg',
-      transformation: [
-        { width: 300, height: 500, crop: 'fill' },
-        { start_offset: `${time}s`, duration: 0.1 }
-      ]
+      const screenshots = times.map(time => cloudinary.url(uploadResponse.public_id, {
+        resource_type: 'video',
+        format: "jpg",
+        transformation: [
+          { width: 200, height: 400, crop: 'fill' },
+          { start_offset: `${time}s`, duration: 0.1 }
+        ]
+      }));
+      console.log(screenshots);
+      return { videoId: reel.video_id, screenshots };
     }));
 
-    return NextResponse.json({ status: 'success', data: screenshots });
+    return NextResponse.json({ status: 'success', data: screenshotsData });
   } catch (error) {
     console.error('Error generating screenshots:', error);
     return NextResponse.json({ status: 'error', message: error }, { status: 500 });
