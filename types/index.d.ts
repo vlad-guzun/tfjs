@@ -84,3 +84,9 @@ declare type CommentProps = {
   commenter_photo: string | undefined;
   createdAt: Date;
 };
+
+declare type  processedDataProps = {
+  videoId: string;
+  description: string;
+  embedding: number[];
+}[]

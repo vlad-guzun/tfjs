@@ -21,22 +21,25 @@ import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as use from "@tensorflow-models/universal-sentence-encoder";
 import * as tf from "@tensorflow/tfjs";
 import { ReelSkeleton } from "./ReelSkeleton";
+import { ProgressReel } from "./ProgressBarReel";
+import {  recommend_reels, save_embedded_reels } from "@/lib/actions/generate.similar.people";
 
 export function CarouselOrientation() {
   const { user } = useUser();
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [liked, setLiked] = useState<boolean[]>([]);
   const [followings, setFollowings] = useState<User_with_interests_location_reason[]>([]);
+  const [reels, setReels] = useState<any[]>([]);
   const [model, setModel] = useState<mobilenet.MobileNet | null>(null);
   const [useModel, setUseModel] = useState<use.UniversalSentenceEncoder | null>(null);
   const [processedData, setProcessedData] = useState<{ videoId: string; description: string; embedding: number[] }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(true); 
 
   useEffect(() => {
     async function setupBackend() {
       await tf.setBackend("webgl");
       await tf.ready();
+      console.log("TensorFlow backend setup complete");
     }
     setupBackend();
   }, []);
@@ -47,6 +50,7 @@ export function CarouselOrientation() {
       const useModel = await use.load();
       setModel(mobilenetModel);
       setUseModel(useModel);
+      console.log("Models loaded");
     }
     loadModels();
   }, []);
@@ -59,7 +63,11 @@ export function CarouselOrientation() {
       const totalVideos = followings?.reduce((count, following) => count + (following.video_posts?.length || 0), 0);
       setLiked(Array(totalVideos).fill(false));
 
+      const reels = await getAllReels();
+      setReels(reels);
+
       setLoading(false);
+      console.log("Data fetched", followings, reels);
     }
 
     if (user?.id) {
@@ -67,66 +75,21 @@ export function CarouselOrientation() {
     }
   }, [user?.id]);
 
-  useEffect(() => {
-    async function fetchAndProcessData() {
-      const reels = await getAllReels();
-      const response = await fetch("/api/generate-screenshot", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ reels }),
-      });
-
-      const data = await response.json();
-      const classificationsArray: { videoId: string; description: string; embedding: number[] }[] = [];
-
-      if (data.status === "success") {
-        const reelData = data.data;
-        for (const batch of reelData) {
-          const batchClassifications = await processBatch([batch]);
-          classificationsArray.push(...batchClassifications);
-        }
-      } else {
-        console.error('Data fetch was not successful:', data);
-      }
-
-      setProcessedData(classificationsArray);
-      setProcessing(false); 
-      console.log(classificationsArray);
-    }
-
-    if (model && useModel && user?.id && !loading) {
-      fetchAndProcessData();
-    }
-  }, [model, useModel, user?.id, loading]);
-
-  const processBatch = async (batch: { videoId: string; screenshots: string[] }[]) => {
-    const batchPromises = batch.map(async (reel) => {
-      if(model === null) throw new Error('model is null');
-      const classificationPromises = reel.screenshots.map((url) => classifyImage(model, url));
-      const classifications = await Promise.all(classificationPromises);
-      const uniqueClassifications = new Set(classifications);
-      const description = Array.from(uniqueClassifications).join(", ");
-      if(useModel === null) throw new Error('useModel is null');
-      const embedding = await useModel.embed([description]);
-      const embeddingArray = Array.from(embedding.dataSync());
-
-      return { videoId: reel.videoId, description, embedding: embeddingArray };
-    });
-
-    return await Promise.all(batchPromises);
-  };
-
   const classifyImage = async (model: mobilenet.MobileNet, imageUrl: string) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = imageUrl;
-    await new Promise((resolve) => {
-      img.onload = resolve;
-    });
-    const predictions = await model.classify(img);
-    return predictions[0].className;
+    try {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = imageUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      const predictions = await model.classify(img);
+      return predictions[0].className;
+    } catch (error) {
+      console.error("Error classifying image:", error);
+      throw error;
+    }
   };
 
   const handleVideoClick = (event: React.MouseEvent<HTMLVideoElement>) => {
@@ -138,7 +101,50 @@ export function CarouselOrientation() {
     }
   };
 
-  const toggleLike = (index: number) => {
+  const toggleLike = async (index: number, url: string) => {
+    console.log("Toggle like triggered for:", url);
+
+    if (model && useModel) {
+      try {
+        console.log("Fetching screenshots for URL:", url);
+        const response = await fetch("/api/generate-screenshot2", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url }),
+        });
+
+        const data = await response.json();
+        const screenshots = data.data.screenshots;
+        console.log("Screenshots received:", screenshots);
+
+        const classifications = await Promise.all(
+          screenshots.map(async (screenshotUrl: string) => {
+            return await classifyImage(model, screenshotUrl);
+          })
+        );
+
+        console.log("Classifications:", classifications);
+
+        const uniqueClassifications = Array.from(new Set(classifications)).join(", ");
+        const embedding = await useModel.embed([uniqueClassifications]);
+        const embeddingArray = embedding.arraySync()[0];
+
+        console.log("Embedding array:", embeddingArray);
+
+        const newProcessedData = { videoId: url, description: uniqueClassifications, embedding: embeddingArray };
+        console.log("Save result:", newProcessedData);
+
+        const reels_ids = await recommend_reels(embeddingArray);
+        console.log(reels_ids);
+      } catch (error) {
+        console.error("Error during classification and embedding:", error);
+      }
+    } else {
+      console.log("Model or useModel not loaded yet");
+    }
+
     setLiked((prevLiked) => {
       const newLiked = [...prevLiked];
       newLiked[index] = !newLiked[index];
@@ -170,37 +176,30 @@ export function CarouselOrientation() {
   };
 
   return (
-    <Carousel
-      opts={{
-        align: "start",
-      }}
-      orientation="vertical"
-      className="w-full max-w-md bg-black border-none relative"
-    >
-      <CarouselContent className="-mt-1 h-screen border-none bg-black">
-        {loading && Array.from({ length: 10 }).map((_, index) => (
-          <CarouselItem key={index} className="h-full">
-            <Card className="h-full bg-black border-none relative">
-              <CardContent className="bg-black relative">
-                <ReelSkeleton />
-              </CardContent>
-            </Card>
-          </CarouselItem>
-        ))}
-        {!loading && processing && Array.from({ length: 10 }).map((_, index) => (
-          <CarouselItem key={index} className="h-full">
-            <Card className="h-full bg-black border-none relative">
-              <CardContent className="bg-black relative">
-                <ReelSkeleton />
-              </CardContent>
-            </Card>
-          </CarouselItem>
-        ))}
-        {!loading && !processing && followings?.map((following, followingIndex) =>
-          following.video_posts?.map((post, postIndex) => {
-            const videoIndex = following.video_posts?.slice(0, postIndex).reduce((acc, vp) => acc + (vp ? 1 : 0), 0) ?? 0;
+    <div className="relative">
+      <Carousel
+        opts={{
+          align: "start",
+        }}
+        orientation="vertical"
+        className="w-full max-w-md bg-black border-none relative"
+      >
+        <CarouselContent className="-mt-1 h-screen border-none bg-black">
+          {loading && Array.from({ length: 10 }).map((_, index) => (
+            <CarouselItem key={index} className="h-full">
+              <Card className="h-full bg-black border-none relative">
+                <CardContent className="bg-black relative">
+                  <ReelSkeleton />
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+          {!loading && followings?.map((following, followingIndex) => {
+            if (!following.video_posts || following.video_posts.length === 0) return null;
+            const post = following.video_posts[0]; // Select only the first video post
+            const videoIndex = followingIndex;
             return (
-              <CarouselItem key={postIndex} className="h-full">
+              <CarouselItem key={post.video_id} className="h-full">
                 <Card className="h-full bg-black border-none relative">
                   <CardContent className="bg-black relative">
                     <video
@@ -215,7 +214,7 @@ export function CarouselOrientation() {
                       onClick={handleVideoClick}
                     ></video>
                     <IoIosHeart
-                      onClick={() => toggleLike(videoIndex)}
+                      onClick={() => toggleLike(videoIndex, post.url)}
                       className={`absolute right-[17px] sm:right-[-18px] top-1/2 transform -translate-y-1/2 mr-4 ${
                         liked[videoIndex] ? 'text-red-500' : 'text-white'
                       }`}
@@ -230,14 +229,14 @@ export function CarouselOrientation() {
                 </Card>
               </CarouselItem>
             );
-          })
-        )}
-      </CarouselContent>
-      <div className="absolute lg:-left-1/3 lg:top-1/2 md:-left-1/4 md:top-1/2 top-0 -right-2 ">
-        <UploadReels />
-      </div>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+          })}
+        </CarouselContent>
+        <div className="absolute lg:-left-1/3 lg:top-1/2 md:-left-1/4 md:top-1/2 top-0 -right-2 ">
+          <UploadReels />
+        </div>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    </div>
   );
 }

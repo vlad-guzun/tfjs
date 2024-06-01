@@ -34,7 +34,6 @@ export async function POST(request: NextRequest) {
           { start_offset: `${time}s`, duration: 0.1 }
         ]
       }));
-      console.log(screenshots);
       return { videoId: reel.video_id, screenshots };
     }));
 
