@@ -36,11 +36,11 @@ export default function Home() {
 
 
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/start2");
-    }
-  },[user]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.push("/start2");
+  //   }
+  // },[user]);
 
   useEffect(() => {
 

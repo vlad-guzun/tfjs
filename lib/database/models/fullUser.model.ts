@@ -71,6 +71,7 @@ const FullUserSchema = new Schema({
           url: String,
           profile_photo: String,
           video_id: String,
+          embedded_video:  [Number],
           comments: [
             {
               commenter: String,

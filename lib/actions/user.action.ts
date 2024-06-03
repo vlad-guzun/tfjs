@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import User from "../database/models/user.model";
 import { connectToDatabase } from "../database/connectToDatabase";
 import FullUser from "../database/models/fullUser.model";
+import FullUserHelper from "../database/models/FullUserHelper";
 
 export async function createUser(user: CreateUserParams) {
   try {
@@ -205,7 +206,6 @@ export async function checkActivityOfAllUsers() {
     return JSON.parse(JSON.stringify(activeUsers));
   } catch (error) {
     console.error(error);
-    throw new Error("Error while checking activity of users");
   }
 }
 
@@ -261,4 +261,112 @@ export async function getAllReels() {
   }
 }
 
+// export async function updateFullUserWithEmbedding(clerkId: string, videoId: string, embedding: number[]) {
+//   try {
+//     await connectToDatabase();
 
+//     const updatedUser = await FullUser.findOneAndUpdate(
+//       { clerkId, "video_posts.video_id": videoId },
+//       { $set: { "video_posts.$.embedding": embedding } },
+//       { new: true }
+//     );
+
+//     if (!updatedUser) throw new Error("User update failed");
+
+//     return JSON.parse(JSON.stringify(updatedUser));
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+interface embeddingProps {
+  videoId: string;
+  embedding: number[];
+}
+export async function update_all_the_video_in_fulluser_with_its_embedding(embeddings: embeddingProps[]) {
+  try {
+    await connectToDatabase();
+    console.log("Database connected.");
+
+    console.log("Embeddings to update:", embeddings);
+
+    for (const embedding of embeddings) {
+      const user = await FullUser.findOne({ "video_posts.video_id": embedding.videoId });
+      console.log(`User found for videoId ${embedding.videoId}:`, user);
+
+      if (user) {
+        const videoPost = user.video_posts.find((post:any) => post.video_id === embedding.videoId);
+        if (videoPost && videoPost.embedded_video && videoPost.embedded_video.length > 0) {
+          console.log(`Skipping update for videoId ${embedding.videoId} as it already has an embedding.`);
+          continue;
+        }
+
+        const updateResult = await FullUser.updateOne(
+          { "video_posts.video_id": embedding.videoId },
+          { $set: { "video_posts.$.embedded_video": embedding.embedding } }
+        );
+
+        console.log(`Update result for videoId ${embedding.videoId}:`, updateResult);
+      } else {
+        console.log(`No user found with videoId ${embedding.videoId}`);
+      }
+    }
+
+    console.log("All relevant users updated with video embeddings");
+    return JSON.parse(JSON.stringify(embeddings));
+  } catch (error) {
+    console.error("Error updating users with video embeddings:", error);
+  }
+}
+
+
+
+export async function getReelsAndAssociatedInfoForRender(videoIds: any) {
+  try {
+    await connectToDatabase();
+    console.log("Database connected.");
+
+    const ids = videoIds.map((idObj:any) => String(idObj.videoId));
+
+    const fullUsers = await FullUser.find({ "video_posts.video_id": { $in: ids } });
+
+    if (!fullUsers || fullUsers.length === 0) {
+      throw new Error("No users found with the provided video IDs");
+    }
+
+    const reelsWithInfo = fullUsers.flatMap(user => 
+      user.video_posts
+        .filter((post:any) => ids.includes(post.video_id))
+        .map((post: any) => ({
+          video: {
+            title: post.title,
+            url: post.url,
+            profile_photo: post.profile_photo,
+            video_id: post.video_id,
+            embedded_video: post.embedded_video,
+            comments: post.comments,
+            createdAt: post.createdAt
+          },
+          user: {
+            clerkId: user.clerkId,
+            email: user.email,
+            username: user.username,
+            photo: user.photo,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            interests: user.interests,
+            location: user.location,
+            reasonForJoining: user.reasonForJoining,
+            following: user.following,
+            feedback: user.feedback,
+            lastSeen: user.lastSeen
+          }
+        }))
+    );
+
+    return JSON.parse(JSON.stringify(reelsWithInfo));
+  } catch (error) {
+    console.error("Error fetching reels and associated info:", error);
+    throw error;
+  }
+}
