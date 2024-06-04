@@ -294,25 +294,56 @@ export async function update_all_the_video_in_fulluser_with_its_embedding(embedd
       const user = await FullUser.findOne({ "video_posts.video_id": embedding.videoId });
       console.log(`User found for videoId ${embedding.videoId}:`, user);
 
+      let userUpdated = false;
       if (user) {
-        const videoPost = user.video_posts.find((post:any) => post.video_id === embedding.videoId);
-        if (videoPost && videoPost.embedded_video && videoPost.embedded_video.length > 0) {
-          console.log(`Skipping update for videoId ${embedding.videoId} as it already has an embedding.`);
-          continue;
+        const videoPost = user.video_posts.find((post: any) => post.video_id === embedding.videoId);
+        if (videoPost) {
+          if (videoPost.embedded_video && videoPost.embedded_video.length === 512) {
+            console.log(`Skipping update for videoId ${embedding.videoId} in FullUser as it already has a valid embedding.`);
+          } else {
+            const updateResult = await FullUser.updateOne(
+              { "video_posts.video_id": embedding.videoId },
+              { $set: { "video_posts.$.embedded_video": embedding.embedding } }
+            );
+            userUpdated = true;
+            console.log(`Update result for videoId ${embedding.videoId} in FullUser:`, updateResult);
+          }
         }
-
-        const updateResult = await FullUser.updateOne(
-          { "video_posts.video_id": embedding.videoId },
-          { $set: { "video_posts.$.embedded_video": embedding.embedding } }
-        );
-
-        console.log(`Update result for videoId ${embedding.videoId}:`, updateResult);
       } else {
-        console.log(`No user found with videoId ${embedding.videoId}`);
+        console.log(`No user found with videoId ${embedding.videoId} in FullUser.`);
+      }
+
+      const helper = await FullUserHelper.findOne({ videoId: embedding.videoId });
+      let helperUpdated = false;
+      if (helper) {
+        if (helper.embedded_video && helper.embedded_video.length === 512) {
+          console.log(`Skipping update for videoId ${embedding.videoId} in FullUserHelper as it already has a valid embedding.`);
+        } else {
+          const helperUpdateResult = await FullUserHelper.updateOne(
+            { videoId: embedding.videoId },
+            { $set: { embedded_video: embedding.embedding } }
+          );
+          helperUpdated = true;
+          console.log(`Update result for videoId ${embedding.videoId} in FullUserHelper:`, helperUpdateResult);
+        }
+      } else {
+        const newHelper = new FullUserHelper({
+          videoId: embedding.videoId,
+          embedded_video: embedding.embedding,
+        });
+        await newHelper.save();
+        helperUpdated = true;
+        console.log(`New helper created for videoId ${embedding.videoId}:`, newHelper);
+      }
+
+      if (userUpdated || helperUpdated) {
+        console.log(`Successfully updated embeddings for videoId ${embedding.videoId}.`);
+      } else {
+        console.log(`No updates needed for videoId ${embedding.videoId}.`);
       }
     }
 
-    console.log("All relevant users updated with video embeddings");
+    console.log("All relevant users and helpers updated with video embeddings.");
     return JSON.parse(JSON.stringify(embeddings));
   } catch (error) {
     console.error("Error updating users with video embeddings:", error);
