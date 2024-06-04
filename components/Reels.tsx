@@ -1,4 +1,5 @@
-"use client";
+"use client"
+require("@tensorflow/tfjs");
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -79,21 +80,11 @@ export function CarouselOrientation() {
   const [useModel, setUseModel] = useState<use.UniversalSentenceEncoder | null>(null);
 
   useEffect(() => {
-    async function fetchData() {
-      await tf.setBackend("webgl");
-      await tf.ready();
-      console.log("TensorFlow backend setup complete");
-
-      const mobilenetModel = await mobilenet.load();
-      const useModel = await use.load();
-      setModel(mobilenetModel);
-      setUseModel(useModel);
-      console.log("MobileNet model and Universal Sentence Encoder loaded");
-
+    async function fetchFollowings() {
       try {
         const followings = await getAllPersonsYouFollow(user?.id);
 
-        const transformedFollowings: RenderedFollowing[] = followings.map((following:any) => {
+        const transformedFollowings: RenderedFollowing[] = followings.map((following: any) => {
           if (following.video_posts && following.video_posts.length > 0) {
             const post = following.video_posts[0];
             return {
@@ -123,13 +114,35 @@ export function CarouselOrientation() {
             };
           }
           return null;
-        }).filter((following:any) => following !== null);
+        }).filter((following: any) => following !== null);
 
         setFollowings(transformedFollowings as RenderedFollowing[]);
         setLoading(false);
 
-        const allPersons = await getAllUsers();
-        const allReels = allPersons.flatMap((user: any) => user.video_posts || []);
+        // Start TensorFlow operations after rendering initial videos
+        fetchEmbeddingsAndUpdate();
+      } catch (error) {
+        console.error("Error fetching followings:", error);
+        setLoading(false);
+      }
+    }
+
+    async function fetchEmbeddingsAndUpdate() {
+      await tf.setBackend("webgl");
+      await tf.ready();
+      console.log("TensorFlow backend setup complete");
+
+      const mobilenetModel = await mobilenet.load();
+      const useModel = await use.load();
+      setModel(mobilenetModel);
+      setUseModel(useModel);
+      console.log("MobileNet model and Universal Sentence Encoder loaded");
+
+      try {
+        const allUsers = await getAllUsers();
+        const allReels = allUsers.flatMap((user: any) => user.video_posts || []);
+
+        console.log("Sending reels data to /api/generate-screenshot:", { reels: allReels });
 
         const response = await fetch("/api/generate-screenshot", {
           method: "POST",
@@ -139,55 +152,60 @@ export function CarouselOrientation() {
           },
         });
 
+        if (!response.ok) {
+          throw new Error(`Failed to fetch screenshots: ${response.statusText}`);
+        }
+
         const data = await response.json();
         const allScreenshots: Screen_shot_props[] = data.data;
 
-        const classificationResults = await Promise.all(
-          allScreenshots.map(async (screenShot) => {
-            const classifications = await Promise.all(
-              screenShot.screenshots.map(async (url) => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                img.src = url;
-                await new Promise((resolve, reject) => {
-                  img.onload = resolve;
-                  img.onerror = reject;
-                });
-                const predictions = await mobilenetModel.classify(img);
-                return predictions[0].className;
-              })
-            );
-            return {
-              videoId: screenShot.videoId,
-              classifications,
-            };
-          })
-        );
+        const classificationPromises = allScreenshots.map(async (screenShot) => {
+          const classifications = await Promise.all(
+            screenShot.screenshots.map(async (url) => {
+              const img = new Image();
+              img.crossOrigin = "anonymous";
+              img.src = url;
+              await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+              });
+              const predictions = await mobilenetModel.classify(img);
+              return predictions[0].className;
+            })
+          );
+          return {
+            videoId: screenShot.videoId,
+            classifications,
+          };
+        });
+
+        const classificationResults = await Promise.all(classificationPromises);
 
         console.log("Classification results:", classificationResults);
 
-        const embeddingResults = await Promise.all(
-          classificationResults.map(async (result) => {
-            const uniqueClassifications = Array.from(new Set(result.classifications)).join(", ");
-            const embedding = await useModel.embed([uniqueClassifications]);
-            const embeddingArray = Array.from(embedding.arraySync()[0]);
-            return {
-              videoId: result.videoId,
-              embedding: embeddingArray,
-            };
-          })
-        );
+        const embeddingPromises = classificationResults.map(async (result) => {
+          const uniqueClassifications = Array.from(new Set(result.classifications)).join(", ");
+          const embedding = await useModel.embed([uniqueClassifications]);
+          const embeddingArray = Array.from(embedding.arraySync()[0]);
+          return {
+            videoId: result.videoId,
+            embedding: embeddingArray,
+          };
+        });
+
+        const embeddingResults = await Promise.all(embeddingPromises);
 
         const result = await update_all_the_video_in_fulluser_with_its_embedding(embeddingResults);
         console.log("Embedding results:", result);
       } catch (error) {
-        console.error("Error fetching or processing data:", error);
-        setLoading(false);
+        console.error("Error fetching or processing embeddings:", error);
       }
     }
 
     if (user?.id) {
-      fetchData();
+      setTimeout(() => {
+        fetchFollowings();
+      }, 1000); 
     }
   }, [user?.id]);
 
@@ -201,6 +219,11 @@ export function CarouselOrientation() {
   };
 
   const toggleLike = async (videoId: string, url: string, title: string) => {
+    setLiked((prevLiked) => ({
+      ...prevLiked,
+      [videoId]: !prevLiked[videoId],
+    }));
+
     const response = await fetch("/api/generate-screenshot2", {
       method: "POST",
       body: JSON.stringify({ url }),
@@ -209,22 +232,27 @@ export function CarouselOrientation() {
       },
     });
 
+    if (!response.ok) {
+      console.error(`Failed to generate screenshots for video ${videoId}: ${response.statusText}`);
+      return;
+    }
+
     const video_screenshots = await (await response.json()).data.screenshots;
 
     if (model && useModel) {
-      const classifications = await Promise.all(
-        video_screenshots.map(async (url: string) => {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.src = url;
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
-          const predictions = await model.classify(img);
-          return predictions[0].className;
-        })
-      );
+      const classificationPromises = video_screenshots.map(async (url: string) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = url;
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+        });
+        const predictions = await model.classify(img);
+        return predictions[0].className;
+      });
+
+      const classifications = await Promise.all(classificationPromises);
 
       const uniqueClassifications = Array.from(new Set(classifications)).join(", ");
       const embedding = await useModel.embed([uniqueClassifications]);
@@ -263,15 +291,10 @@ export function CarouselOrientation() {
           };
         }
         return null;
-      }).filter((following:any) => following !== null);
+      }).filter((following: any) => following !== null);
 
       setAdditionalFollowings(prev => [...prev, ...transformedSimilarFollowings]);
     }
-
-    setLiked((prevLiked) => ({
-      ...prevLiked,
-      [videoId]: !prevLiked[videoId],
-    }));
   };
 
   const timeAgo = (date: string) => {
@@ -323,7 +346,7 @@ export function CarouselOrientation() {
             allFollowings.map((following, index) => {
               if (!following.video || !following.video.video_id) return null;
               return (
-                <CarouselItem key={following.video.video_id} className="h-full">
+                <CarouselItem key={`${following.video.video_id}-${index}`} className="h-full">
                   <Card className="h-full bg-black border-none relative">
                     <CardContent className="bg-black relative">
                       <video
