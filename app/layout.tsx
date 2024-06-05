@@ -3,18 +3,15 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Link from "next/link";
-import Image from "next/image";
 import { SignedIn, UserButton } from "@clerk/nextjs";
-import {dark} from "@clerk/themes";
-import { Home } from "lucide-react";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
+import { dark } from "@clerk/themes";
 import { DropdownMenuDemo } from "@/components/Dropdown";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import ActiveStatus from "@/components/ActiveStatus";
-
-
-
-
+import { RiHomeFill } from "react-icons/ri";
+import { MdOutlineSlowMotionVideo } from "react-icons/md";
+import { BsFillSendFill } from "react-icons/bs";
+import { MdAccountCircle } from "react-icons/md";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,23 +26,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={{
-      variables: {
-        colorText: "white",
-        colorInputText: "white",
-        colorTextSecondary: "white",
-        colorDanger: "red",
-        colorSuccess: "white",
-        colorInputBackground: "black",
-        colorBackground: "black",
-        colorTextOnPrimaryBackground: "white",
-        colorNeutral: "white",
-        colorPrimary: "white",
-        colorShimmer: "white",
-        colorWarning: "white",
-        
-      }
-    }}>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorText: "white",
+          colorInputText: "white",
+          colorTextSecondary: "white",
+          colorDanger: "red",
+          colorSuccess: "white",
+          colorInputBackground: "black",
+          colorBackground: "black",
+          colorTextOnPrimaryBackground: "white",
+          colorNeutral: "white",
+          colorPrimary: "white",
+          colorShimmer: "white",
+          colorWarning: "white",
+        },
+      }}
+    >
       <html lang="en">
         <body className="bg-black">
           <div className="w-full min-h-screen flex flex-col lg:flex-row">
@@ -58,9 +56,35 @@ export default function RootLayout({
                   <UserButton />
                 </SignedIn> */}
               </div>
-              <div className="sticky top-0"><DropdownMenuDemo /></div>
+              <div className="sticky top-1/3 text-white flex flex-col items-center">
+                <div className="flex flex-col gap-3 w-full items-center font-serif">
+                  <Link href={"/"}>
+                    <div className="flex items-center justify-start w-24">
+                        <RiHomeFill className="mr-2" />
+                        <p>home</p>
+                    </div>
+                  </Link>
+                  <Link href={`/reels/user`}> {/*hz cum sa iau userul de aici*/}
+                    <div className="flex items-center justify-start w-24">
+                      <MdOutlineSlowMotionVideo className="mr-2" />
+                      <p>reels</p>
+                    </div>
+                  </Link>
+                  <Link href={`/messages/user`}>
+                    <div className="flex items-center justify-start w-24">
+                      <BsFillSendFill className="mr-2" />
+                      <p>messages</p>
+                    </div>
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div className="w-full lg:w-2/3 border-slate-800 lg:border-r"><div className="block lg:hidden top-0 sticky"><DropdownMenuDemo /></div>{children}</div>
+            <div className="w-full lg:w-2/3 border-slate-800 lg:border-r">
+              <div className="block lg:hidden top-0 sticky">
+                <DropdownMenuDemo />
+              </div>
+              {children}
+            </div>
             <Toaster />
             <ActiveStatus />
             <div className="w-full lg:w-1/6">

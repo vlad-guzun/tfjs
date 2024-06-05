@@ -1,4 +1,4 @@
-"use client"
+"use client";
 require("@tensorflow/tfjs");
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -119,7 +119,6 @@ export function CarouselOrientation() {
         setFollowings(transformedFollowings as RenderedFollowing[]);
         setLoading(false);
 
-        // Start TensorFlow operations after rendering initial videos
         fetchEmbeddingsAndUpdate();
       } catch (error) {
         console.error("Error fetching followings:", error);
@@ -203,6 +202,7 @@ export function CarouselOrientation() {
     }
 
     if (user?.id) {
+      setLoading(true);
       setTimeout(() => {
         fetchFollowings();
       }, 1000); 
@@ -365,7 +365,7 @@ export function CarouselOrientation() {
                         size={25}
                       />
                       <ReelComments videoId={following.video.video_id} following={following.user} />
-                      <div className="absolute bottom-[60px] right-[35px] sm:right-[0px] ">
+                      <div className="absolute bottom-[55px] lg:right-2 sm:right-[0px] right-[51px]">
                         <ReelPopover following={following.user} videoId={following.video.video_id} />
                       </div>
                       <p className="absolute bottom-[-1] left-5 text-white p-2 rounded-md font-serif">
