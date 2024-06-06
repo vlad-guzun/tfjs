@@ -4,16 +4,19 @@ import { SignedIn, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { OptionsReelPopover } from "./OptionsReelPopover";
+import NotificationModal from "./NotificationModal";
 
 export function SeparatorForPersonalProfile({ personalProfile }: { personalProfile: User_with_interests_location_reason }) {
-  const [reels, setReels] = useState<VideoPostProps[]>();
+  const [reels, setReels] = useState<VideoPostProps[]>([]);
+  const [notification, setNotification] = useState<string | null>(null);
+
+  const fetchReels = async () => {
+    const fetchedReels = await getAllVideosById(personalProfile?.clerkId as string);
+    setReels(fetchedReels as VideoPostProps[]);
+  };
 
   useEffect(() => {
-    const getReels = async () => {
-      const reels = await getAllVideosById(personalProfile?.clerkId as string);
-      setReels(reels as VideoPostProps[]);
-    };
-    getReels();
+    fetchReels();
   }, [personalProfile]);
 
   const handleVideoClick = (event: React.MouseEvent<HTMLVideoElement>) => {
@@ -23,6 +26,24 @@ export function SeparatorForPersonalProfile({ personalProfile }: { personalProfi
     } else {
       video.pause();
     }
+  };
+
+  const handleDelete = async (videoId: string) => {
+    await fetchReels(); 
+    setNotification('Reel deleted successfully');
+  };
+
+  const handleEdit = (videoId: string, newTitle: string) => {
+    setReels((prevReels) => 
+      prevReels.map((reel) => 
+        reel.video_id === videoId ? { ...reel, title: newTitle } : reel
+      )
+    );
+    setNotification('reel title updated');
+  };
+
+  const closeNotification = () => {
+    setNotification(null);
   };
 
   return (
@@ -49,7 +70,7 @@ export function SeparatorForPersonalProfile({ personalProfile }: { personalProfi
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4 mt-4 mb-24">
         {reels?.map((reel) => (
-          <div key={reel.title} className="relative w-full h-64">
+          <div key={reel.video_id} className="relative w-full h-64">
             <video
               src={reel.url}
               className="w-full h-full object-cover rounded-md shadow-lg"
@@ -58,11 +79,12 @@ export function SeparatorForPersonalProfile({ personalProfile }: { personalProfi
               loop
             />
             <div className="absolute top-2 right-2">
-              <OptionsReelPopover reel={reel}/>
+              <OptionsReelPopover reel={reel} onDelete={() => handleDelete(reel.video_id)} onEdit={(newTitle) => handleEdit(reel.video_id, newTitle)} />
             </div>
           </div>
         ))}
       </div>
+      {notification && <NotificationModal message={notification} onClose={closeNotification} />}
     </div>
   );
 }

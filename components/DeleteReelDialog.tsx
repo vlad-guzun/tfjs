@@ -1,30 +1,42 @@
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogFooter,
-    AlertDialogTrigger,
-  } from "@/components/ui/alert-dialog";
-  import { Trash, X } from "lucide-react";
-  import { useState, useRef } from "react";
-  
-  export function DeleteReelDialog({ reel }: { reel: VideoPostProps }) {
-    const [playing, setPlaying] = useState(true);
-    const videoRef = useRef<HTMLVideoElement>(null);
-  
-    const handleVideoClick = () => {
-      if (videoRef.current) {
-        if (playing) {
-          videoRef.current.pause();
-        } else {
-          videoRef.current.play();
-        }
-        setPlaying(!playing);
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteReelById } from "@/lib/actions/post.action";
+import { Trash } from "lucide-react";
+import { useState, useRef } from "react";
+import NotificationModal from "./NotificationModal";
+
+export function DeleteReelDialog({ reel, onDelete }: { reel: VideoPostProps, onDelete: () => void }) {
+  const [playing, setPlaying] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [reelDeleted, setReelDeleted] = useState<boolean>(false);
+
+  const handleVideoClick = () => {
+    if (videoRef.current) {
+      if (playing) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
       }
-    };
-  
-    return (
+      setPlaying(!playing);
+    }
+  };
+
+  const deleteReel = async () => {
+    const result = await deleteReelById(reel.video_id);
+    console.log("reel deleted");
+    console.log(result);
+    setReelDeleted(true);
+    onDelete(); 
+  };
+
+  return (
+    <div>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <div className="flex text-red-700 items-center cursor-pointer">
@@ -43,10 +55,10 @@ import {
             />
           </div>
           <AlertDialogFooter className="flex justify-end mt-4">
-            <AlertDialogCancel className="text-white border-none  bg-transparent bg-black hover:bg-black hover:text-slate-400 p-2 rounded-md">
+            <AlertDialogCancel className="text-white border-none bg-transparent bg-black hover:bg-black hover:text-slate-400 p-2 rounded-md">
               <p>cancel</p>
             </AlertDialogCancel>
-            <AlertDialogAction className="ml-2 text-white text-sm font-serif bg-red-600 hover:bg-red-700 p-2 rounded-md">
+            <AlertDialogAction onClick={deleteReel} className="ml-2 text-white text-sm font-serif bg-red-600 hover:bg-red-700 p-2 rounded-md">
               confirm delete
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -55,17 +67,18 @@ import {
           video::-webkit-media-controls-panel {
             display: none !important;
           }
-  
+
           video::-webkit-media-controls-play-button,
           video::-webkit-media-controls-volume-slider,
           video::-webkit-media-controls-timeline-container,
           video::-webkit-media-controls-current-time-display,
           video::-webkit-media-controls-time-remaining-display,
           video::-webkit-media-controls-fullscreen-button {
-            display: none !important;
+            display: none !important.
           }
         `}</style>
       </AlertDialog>
-    );
-  }
-  
+      {reelDeleted && (<NotificationModal onClose={() => setReelDeleted(false)} message="reel deleted" />)}
+    </div>
+  );
+}

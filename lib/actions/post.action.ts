@@ -1,6 +1,7 @@
 "use server";
 
 import { connectToDatabase } from "../database/connectToDatabase";
+import FullUserHelper from "../database/models/FullUserHelper";
 import StartReel from "../database/models/Reel.model";
 import FullUser from "../database/models/fullUser.model";
 import {nanoid} from "nanoid";
@@ -166,3 +167,36 @@ export async function createTextPost(input: string, textArea: string, clerkId: s
       console.log(error);
     }
   }
+
+  export async function deleteReelById (videoId: string)  {
+    try {
+
+      await connectToDatabase();
+
+      const fullUserResult = await FullUser.updateOne(
+        { 'video_posts.video_id': videoId },
+        { $pull: { video_posts: { video_id: videoId } } }
+      );
+  
+      const fullUserHelperResult = await FullUserHelper.deleteOne({ videoId });
+  
+      return JSON.parse(JSON.stringify({fullUserHelperResult,fullUserResult}));
+    } catch (error) {
+      console.error('Error deleting reel:', error);
+    }
+  };
+
+  export async function updateReelTitle(videoId: string, newTitle: string) {
+    try {
+      await connectToDatabase();
+      
+      const result = await FullUser.updateOne(
+        { 'video_posts.video_id': videoId },
+        { $set: { 'video_posts.$.title': newTitle } }
+      );
+  
+      return JSON.parse(JSON.stringify(result));
+    } catch (error) {
+      console.error('Error updating reel title:', error);
+    }
+  };

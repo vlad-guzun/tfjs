@@ -75,6 +75,7 @@ declare type VideoPostProps = {
     title: string,
     url: string,
     profile_photo: string,
+    video_id: string;
 
 }
 
