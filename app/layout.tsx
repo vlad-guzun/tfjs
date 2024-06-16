@@ -12,6 +12,7 @@ import { RiHomeFill } from "react-icons/ri";
 import { MdOutlineSlowMotionVideo } from "react-icons/md";
 import { BsFillSendFill } from "react-icons/bs";
 import { MdAccountCircle } from "react-icons/md";
+import Search from "@/components/Search";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -76,6 +77,9 @@ export default function RootLayout({
                       <p>messages</p>
                     </div>
                   </Link>
+                  <div>
+                    <Search />
+                  </div>
                 </div>
               </div>
             </div>
