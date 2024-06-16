@@ -2,6 +2,7 @@ import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
+import Link from "next/link";
 
 const scrollAreaStyles: React.CSSProperties = {
   maxHeight: '18rem',
@@ -43,10 +44,12 @@ export function SearchScroll({ searchResults }: { searchResults: User_with_inter
         ) : (
           searchResults.map((search) => (
             <div key={search.clerkId}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start', gap: '0.5rem', marginTop: '1rem', color: 'white' }}>
-                <Image className="rounded-full" src={search.photo} width={30} height={30} alt={search.clerkId} />
-                <span>{search.username}</span>
-              </div>
+              <Link href={`/profile/${search.username}`} className="flex items-center justify-start w-24">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'start', gap: '0.5rem', marginTop: '1rem', color: 'white' }}>
+                    <Image className="rounded-full" src={search.photo} width={30} height={30} alt={search.clerkId} />
+                    <span>{search.username}</span>
+                </div>
+                </Link>
             </div>
           ))
         )}
