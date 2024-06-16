@@ -14,11 +14,12 @@ export function SearchPopover({
   searchResults: User_with_interests_location_reason[];
 }) {
   return (
+    <div className="h-[600px]">
     <Popover>
       <PopoverTrigger asChild>
         <Button className="flex items-center justify-start w-24 mt-2"><Search size={20}/><span className="text-lg ml-1">search</span></Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[180px] p-4 mt-3 bg-black border-none ">
+      <PopoverContent className="w-[180px]  p-4 mt-3 h-full bg-black border-none">
         <Input
           type="text"
           value={query}
@@ -29,5 +30,6 @@ export function SearchPopover({
         <SearchScroll searchResults={searchResults} />
       </PopoverContent>
     </Popover>
+    </div>
   );
 }
