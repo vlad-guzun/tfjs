@@ -71,7 +71,7 @@ export default function RootLayout({
                       <p>reels</p>
                     </div>
                   </Link>
-                  <Link href={`/messages/user`}>
+                  <Link href={`/inbox`}>
                     <div className="flex items-center justify-start w-24">
                       <BsFillSendFill className="mr-2" />
                       <p>messages</p>

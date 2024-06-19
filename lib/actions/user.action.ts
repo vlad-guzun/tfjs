@@ -401,3 +401,42 @@ export async function getReelsAndAssociatedInfoForRender(videoIds: any) {
     throw error;
   }
 }
+
+export async function addUserToInbox(clerkId: string | undefined, userToAdd: string | undefined) {
+  try {
+    await connectToDatabase();
+
+    const user = await FullUser.findOne({ clerkId });
+    if (!user) throw new Error("User not found");
+
+    const userToAddToInbox = await FullUser.findOne({ clerkId: userToAdd });
+    if (!userToAddToInbox) throw new Error("User to add not found");
+
+    const updatedUser = await FullUser.findOneAndUpdate(
+      { clerkId },
+      { $addToSet: { inbox: userToAdd } },
+      { new: true }
+    );
+
+    if (!updatedUser) throw new Error("User update failed");
+
+    return JSON.parse(JSON.stringify(updatedUser));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function GetYourInboxUsers(clerkId: string | undefined) {
+  try {
+    await connectToDatabase();
+
+    const user = await FullUser.findOne({ clerkId });
+    if (!user) throw new Error("User not found");
+
+    const inboxUsers = await FullUser.find({ clerkId: { $in: user.inbox } });
+
+    return JSON.parse(JSON.stringify(inboxUsers));
+  } catch (error) {
+    console.log(error);
+  }
+}

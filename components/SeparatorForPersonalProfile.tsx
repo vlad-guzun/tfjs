@@ -1,14 +1,27 @@
+import * as React from "react";
 import { Separator } from "@/components/ui/separator";
-import { getAllVideosById } from "@/lib/actions/user.action";
+import { getAllPersonsYouFollow, getAllVideosById } from "@/lib/actions/user.action";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { OptionsReelPopover } from "./OptionsReelPopover";
 import NotificationModal from "./NotificationModal";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { CommandFollowing } from "./CommandFollowing";
 
 export function SeparatorForPersonalProfile({ personalProfile }: { personalProfile: User_with_interests_location_reason }) {
   const [reels, setReels] = useState<VideoPostProps[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
+  const [following, setFollowing] = useState<User_with_interests_location_reason[]>([]);
 
   const fetchReels = async () => {
     const fetchedReels = await getAllVideosById(personalProfile?.clerkId as string);
@@ -18,6 +31,14 @@ export function SeparatorForPersonalProfile({ personalProfile }: { personalProfi
   useEffect(() => {
     fetchReels();
   }, [personalProfile]);
+
+  useEffect(() => {
+    const getFollowing = async () => {
+      const following = await getAllPersonsYouFollow(personalProfile?.clerkId);
+      setFollowing(following);
+    };
+    getFollowing();
+  }, [personalProfile?.clerkId]);
 
   const handleVideoClick = (event: React.MouseEvent<HTMLVideoElement>) => {
     const video = event.currentTarget;
@@ -29,17 +50,17 @@ export function SeparatorForPersonalProfile({ personalProfile }: { personalProfi
   };
 
   const handleDelete = async (videoId: string) => {
-    await fetchReels(); 
-    setNotification('Reel deleted successfully');
+    await fetchReels();
+    setNotification("Reel deleted successfully");
   };
 
   const handleEdit = (videoId: string, newTitle: string) => {
-    setReels((prevReels) => 
-      prevReels.map((reel) => 
+    setReels((prevReels) =>
+      prevReels.map((reel) =>
         reel.video_id === videoId ? { ...reel, title: newTitle } : reel
       )
     );
-    setNotification('reel title updated');
+    setNotification("Reel title updated");
   };
 
   const closeNotification = () => {
@@ -62,6 +83,26 @@ export function SeparatorForPersonalProfile({ personalProfile }: { personalProfi
           <div className="text-slate-400">{personalProfile?.location}</div>
           <Separator orientation="vertical" className="h-5 border border-slate-700" />
           <div className="text-slate-400">{personalProfile?.interests}</div>
+          <Separator orientation="vertical" className="h-5 border border-slate-700" />
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <div className="text-slate-400 cursor-pointer">
+                Following: {following?.length}
+              </div>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="w-96 bg-black text-white border-none shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]">
+              <AlertDialogHeader>
+                  {following?.length === 0 ? (
+                    <p className="text-sm text-gray-500">You are not following anyone.</p>
+                  ) : (
+                    <CommandFollowing following={following} />
+                  )}
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>close</AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <Separator orientation="vertical" className="h-5 border border-slate-700" />
           <SignedIn>
             <UserButton />

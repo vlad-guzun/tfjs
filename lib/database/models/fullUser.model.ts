@@ -92,6 +92,9 @@ const FullUserSchema = new Schema({
     },
     lastSeen: {
       type: Date,
+    },
+    inbox: {
+      type: [String], // array of clerkIds
     }
 
 });
