@@ -8,11 +8,8 @@ import { dark } from "@clerk/themes";
 import { DropdownMenuDemo } from "@/components/Dropdown";
 import { Toaster } from "@/components/ui/toaster";
 import ActiveStatus from "@/components/ActiveStatus";
-import { RiHomeFill } from "react-icons/ri";
-import { MdOutlineSlowMotionVideo } from "react-icons/md";
-import { BsFillSendFill } from "react-icons/bs";
-import { MdAccountCircle } from "react-icons/md";
-import Search from "@/components/Search";
+import { OptionsAccordion } from "@/components/OptionsAcordion";
+import { DropdownMenuDemoMobile } from "@/components/MobileOptionsAcordion";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -58,34 +55,12 @@ export default function RootLayout({
                 </SignedIn> */}
               </div>
               <div className="sticky top-1/3 text-white flex flex-col items-center">
-                <div className="flex flex-col gap-3 w-full items-center font-serif">
-                  <Link href={"/"}>
-                    <div className="flex items-center justify-start w-24">
-                        <RiHomeFill className="mr-2" />
-                        <p>home</p>
-                    </div>
-                  </Link>
-                  <Link href={`/reels/user`}> {/*hz cum sa iau userul de aici*/}
-                    <div className="flex items-center justify-start w-24">
-                      <MdOutlineSlowMotionVideo className="mr-2" />
-                      <p>reels</p>
-                    </div>
-                  </Link>
-                  <Link href={`/inbox`}>
-                    <div className="flex items-center justify-start w-24">
-                      <BsFillSendFill className="mr-2" />
-                      <p>messages</p>
-                    </div>
-                  </Link>
-                  <div>
-                    <Search />
-                  </div>
-                </div>
+                <OptionsAccordion />
               </div>
             </div>
             <div className="w-full lg:w-2/3 border-slate-800 lg:border-r">
               <div className="block lg:hidden top-0 sticky">
-                <DropdownMenuDemo />
+                <DropdownMenuDemoMobile />
               </div>
               {children}
             </div>

@@ -52,7 +52,7 @@ export async function generate_similar_reels( embedding: Number[]) {
                 queryVector: embedding,
                 path: "embedded_video",
                 numCandidates: 6,
-                limit: 2,
+                limit: 3,
                 index: "helper"
             },
         },

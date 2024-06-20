@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 import { EmojiStyle, Theme } from "emoji-picker-react";
 import { BsEmojiGrinFill } from "react-icons/bs";
 import useActiveList from "@/hooks/useActiveList";
-import {PulsatingCircle} from "@/components/PulsingCircle"; // Ensure this path is correct
+import {PulsatingCircle} from "@/components/PulsingCircle";  
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -128,7 +128,7 @@ const Inbox: React.FC = () => {
               scrollbar-width: none; /* Firefox */
             }
           `}</style>
-          <div className="font-bold text-lg mb-4">{'Люди'}</div>
+          <div className="font-serif text-lg mb-4 ">{'People'}</div>
           <div className="scroll-container w-full">
             <ul className="flex flex-col items-start w-full">
               {inboxUsers.map((user) => {
@@ -165,7 +165,7 @@ const Inbox: React.FC = () => {
       <ResizablePanel defaultSize={75} minSize={50} maxSize={100}>
         <div className="flex flex-col h-full p-6 bg-black text-white">
           {!selectedUser && (
-            <p className="font-bold text-lg mb-4">Выберите человека, чтобы просмотреть сообщения</p>
+            <p className="text-lg mb-4 font-serif text-center mt-[300px]">Select a chat, to start messaging</p>
           )}
           {selectedUser && (
             <div className="scroll-container flex flex-col w-full">
@@ -214,7 +214,7 @@ const Inbox: React.FC = () => {
               `}</style>
               {messages.map((message, index) => (
                 <div key={index} className={`message ${message.senderId === loggedInUser?.id ? "sent" : "received"}`}>
-                  <span className="sender">{message.senderId === loggedInUser?.id ? "Вы" : selectedUser.username}</span>
+                  <span className="sender">{message.senderId === loggedInUser?.id ? "" : selectedUser.username}</span>
                   {message.text}
                 </div>
               ))}
@@ -246,7 +246,7 @@ const Inbox: React.FC = () => {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="flex-1 px-4 py-2 text-white rounded-l-md bg-black "
-                placeholder="Введите сообщение..."
+                placeholder="send a message..."
               />
               <button
                 type="submit"
