@@ -9,7 +9,15 @@ import { GetYourInboxUsers } from "@/lib/actions/user.action";
 import { fetchMessages, createMessage } from "@/lib/actions/message.action";
 import { useUser } from "@clerk/nextjs";
 import { SendHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import pusherClient from "@/lib/pusher/pusherClient";
+import dynamic from "next/dynamic";
+import { EmojiStyle, Theme } from "emoji-picker-react";
+import { BsEmojiGrinFill } from "react-icons/bs";
+import useActiveList from "@/hooks/useActiveList";
+import {PulsatingCircle} from "@/components/PulsingCircle"; // Ensure this path is correct
+
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
 interface Message {
   senderId: string;
@@ -23,6 +31,18 @@ const Inbox: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const { user: loggedInUser } = useUser();
+  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState<boolean>(false);
+  const { members } = useActiveList();
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  useEffect(scrollToBottom, [messages]);
 
   const handleResize = (_event: Event, sizes: number[]) => {
     setIsCollapsed(sizes[0] <= 5);
@@ -37,6 +57,24 @@ const Inbox: React.FC = () => {
       getYourInboxUsers();
     }
   }, [loggedInUser]);
+
+  useEffect(() => {
+    if (selectedUser && loggedInUser) {
+      const channelName = `conversation-${loggedInUser.id}-${selectedUser.clerkId}`;
+      const channel = pusherClient.subscribe(channelName);
+
+      const handleMessage = (message: Message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      };
+
+      channel.bind('new-message', handleMessage);
+
+      return () => {
+        channel.unbind('new-message', handleMessage);
+        pusherClient.unsubscribe(channelName);
+      };
+    }
+  }, [selectedUser, loggedInUser]);
 
   const handleUserClick = async (user: User_with_interests_location_reason) => {
     setSelectedUser(user);
@@ -56,31 +94,21 @@ const Inbox: React.FC = () => {
 
         setMessages([...messages, { senderId, text: newMessage.trim() }]);
         setNewMessage("");
+        setEmojiPickerVisible(false); 
       }
     }
   };
 
-  const onResize = (event: any) => {
-    const sizes = event.detail.sizes;
-    handleResize(event, sizes);
+  const handleEmojiClick = (emojiData: any, _event: MouseEvent) => {
+    setNewMessage(newMessage + emojiData.emoji);
+    setEmojiPickerVisible(false);
   };
-
-  useEffect(() => {
-    const resizableGroup = document.querySelector('.h-screen');
-    if (resizableGroup) {
-      resizableGroup.addEventListener('resize', onResize);
-    }
-    return () => {
-      if (resizableGroup) {
-        resizableGroup.removeEventListener('resize', onResize);
-      }
-    };
-  }, []);
 
   return (
     <ResizablePanelGroup
       direction="horizontal"
       className="h-screen"
+      onResize={handleResize as any} 
     >
       <ResizablePanel defaultSize={25} maxSize={50} minSize={0}>
         <div className={`flex flex-col h-full p-6 bg-black text-white ${isCollapsed ? "hidden" : "block"}`}>
@@ -103,24 +131,32 @@ const Inbox: React.FC = () => {
           <div className="font-bold text-lg mb-4">{'Люди'}</div>
           <div className="scroll-container w-full">
             <ul className="flex flex-col items-start w-full">
-              {inboxUsers.map((user) => (
-                <li
-                  key={user.clerkId}
-                  className={`py-4 cursor-pointer flex items-center w-full ${
-                    selectedUser?.clerkId === user.clerkId ? "bg-gray-700" : ""
-                  }`}
-                  onClick={() => handleUserClick(user)}
-                >
-                  <div className={`flex-none w-10 h-10 rounded-full overflow-hidden ${selectedUser?.clerkId === user.clerkId ? "shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]" : ""}`}>
-                    <img
-                      src={user.photo}
-                      alt={user.username}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="ml-4">{user.username}</span>
-                </li>
-              ))}
+              {inboxUsers.map((user) => {
+                const isUserActive = members.indexOf(user.clerkId) !== -1;
+                return (
+                  <li
+                    key={user.clerkId}
+                    className={`py-4 cursor-pointer flex items-center w-full ${
+                      selectedUser?.clerkId === user.clerkId ? "bg-gray-700" : ""
+                    }`}
+                    onClick={() => handleUserClick(user)}
+                  >
+                    <div className={`relative flex-none w-10 h-10 rounded-full overflow-visible ${selectedUser?.clerkId === user.clerkId ? "shadow-[0_0_10px_2px_rgba(255,255,255,0.6)]" : ""}`}>
+                      <img
+                        src={user.photo}
+                        alt={user.username}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      {isUserActive && (
+                        <div className="absolute -top-1 -right-2">
+                          <PulsatingCircle />
+                        </div>
+                      )}
+                    </div>
+                    <span className="ml-4">{user.username}</span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -182,16 +218,29 @@ const Inbox: React.FC = () => {
                   {message.text}
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
           )}
           {selectedUser && (
             <form
-              className="flex items-center mt-auto border-t border-t-slate-900"
+              className="flex items-center mt-auto border-t border-t-slate-900 relative"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSendMessage();
               }}
             >
+              <button type="button" onClick={() => setEmojiPickerVisible(!isEmojiPickerVisible)}>
+                <BsEmojiGrinFill size={20} />
+              </button>
+              {isEmojiPickerVisible && (
+                <div style={{ position: "absolute", bottom: "50px", left: "50px" }}>
+                  <EmojiPicker
+                    onEmojiClick={handleEmojiClick}
+                    emojiStyle={EmojiStyle.APPLE}
+                    theme={Theme.DARK}
+                  />
+                </div>
+              )}
               <input
                 type="text"
                 value={newMessage}
@@ -203,7 +252,7 @@ const Inbox: React.FC = () => {
                 type="submit"
                 className="px-4 py-2  text-white rounded-r-md"
               >
-               <SendHorizontal className="hover:text-slate-400"/>
+                <SendHorizontal className="hover:text-slate-400" />
               </button>
             </form>
           )}

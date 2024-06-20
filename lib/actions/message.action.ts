@@ -2,6 +2,7 @@
 
 import { connectToDatabase } from "../database/connectToDatabase";
 import Conversation from "../database/models/OneToOneConversation";
+import { pusherServer } from "../pusher";
 
 
 
@@ -23,6 +24,9 @@ export async function createMessage(senderId: string | undefined, receiverId: st
     const message = { senderId, text };
     conversation.messages.push(message);
     await conversation.save();
+
+    pusherServer.trigger(`conversation-${senderId}-${receiverId}`, 'new-message', message);
+    pusherServer.trigger(`conversation-${receiverId}-${senderId}`, 'new-message', message);
 
 
     return JSON.parse(JSON.stringify({ message: 'Message sent' }));
