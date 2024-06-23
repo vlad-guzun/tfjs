@@ -53,3 +53,16 @@ export async function createMessage(senderId: string | undefined, receiverId: st
       console.error(err);
     }
   }
+
+  export async function notifyTyping(senderId: string | undefined, receiverId: string | undefined, status: string) {
+    try {
+      const typingEvent = { senderId, status };
+      pusherServer.trigger(`conversation-${senderId}-${receiverId}`, 'typing', typingEvent);
+      pusherServer.trigger(`conversation-${receiverId}-${senderId}`, 'typing', typingEvent);
+  
+      return JSON.parse(JSON.stringify({ message: 'Typing event handled' }));
+    } catch (err) {
+      console.error(err);
+      throw new Error('Failed to handle typing event');
+    }
+  }

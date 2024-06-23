@@ -6,35 +6,42 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { GetYourInboxUsers } from "@/lib/actions/user.action";
-import { fetchMessages, createMessage } from "@/lib/actions/message.action";
+import { fetchMessages, createMessage, notifyTyping } from "@/lib/actions/message.action";
 import { useUser } from "@clerk/nextjs";
 import { SendHorizontal } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import pusherClient from "@/lib/pusher/pusherClient";
 import dynamic from "next/dynamic";
-import { EmojiStyle, Theme } from "emoji-picker-react";
 import { BsEmojiGrinFill } from "react-icons/bs";
 import useActiveList from "@/hooks/useActiveList";
-import {PulsatingCircle} from "@/components/PulsingCircle";  
+import { PulsatingCircle } from "@/components/PulsingCircle";
+import { EmojiStyle, Theme, EmojiClickData } from "emoji-picker-react";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
 interface Message {
   senderId: string;
   text: string;
+  reaction?: string;
 }
 
+const emojis = ["😀", "❤️", "👍"];
+
 const Inbox: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<User_with_interests_location_reason | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
-  const [inboxUsers, setInboxUsers] = useState<User_with_interests_location_reason[]>([]);
+  const [inboxUsers, setInboxUsers] = useState<any[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const { user: loggedInUser } = useUser();
-  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState<boolean>(false);
+  const [isEmojiPickerVisible, setEmojiPickerVisible] = useState<number | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false); 
   const { members } = useActiveList();
+  const [otherUserTyping, setOtherUserTyping] = useState<boolean>(false); 
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const typingIndicatorRef = useRef<HTMLDivElement | null>(null); 
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -42,7 +49,14 @@ const Inbox: React.FC = () => {
     }
   };
 
+  const scrollToTypingIndicator = () => {
+    if (typingIndicatorRef.current) {
+      typingIndicatorRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   useEffect(scrollToBottom, [messages]);
+  useEffect(scrollToTypingIndicator, [otherUserTyping]); 
 
   const handleResize = (_event: Event, sizes: number[]) => {
     setIsCollapsed(sizes[0] <= 5);
@@ -67,16 +81,24 @@ const Inbox: React.FC = () => {
         setMessages((prevMessages) => [...prevMessages, message]);
       };
 
-      channel.bind('new-message', handleMessage);
+      const handleTypingEvent = (data: { senderId: string; status: string }) => {
+        if (data.senderId !== loggedInUser?.id) {
+          setOtherUserTyping(data.status === 'typing');
+        }
+      };
+
+      channel.bind("new-message", handleMessage);
+      channel.bind("typing", handleTypingEvent);
 
       return () => {
-        channel.unbind('new-message', handleMessage);
+        channel.unbind("new-message", handleMessage);
+        channel.unbind("typing", handleTypingEvent);
         pusherClient.unsubscribe(channelName);
       };
     }
   }, [selectedUser, loggedInUser]);
 
-  const handleUserClick = async (user: User_with_interests_location_reason) => {
+  const handleUserClick = async (user: any) => {
     setSelectedUser(user);
     if (loggedInUser && user) {
       const fetchedMessages = await fetchMessages(loggedInUser.id, user.clerkId);
@@ -94,21 +116,44 @@ const Inbox: React.FC = () => {
 
         setMessages([...messages, { senderId, text: newMessage.trim() }]);
         setNewMessage("");
-        setEmojiPickerVisible(false); 
+        setShowEmojiPicker(false);
+        setEmojiPickerVisible(null);
+        await notifyTyping(senderId, receiverId, 'stopped'); 
       }
     }
   };
 
-  const handleEmojiClick = (emojiData: any, _event: MouseEvent) => {
-    setNewMessage(newMessage + emojiData.emoji);
-    setEmojiPickerVisible(false);
+  const handleEmojiClick = (emoji: string, index: number) => {
+    const updatedMessages = messages.map((msg, idx) =>
+      idx === index ? { ...msg, reaction: emoji } : msg
+    );
+    setMessages(updatedMessages);
+    setEmojiPickerVisible(null); 
+  };
+
+  const triggerTypingEvent = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    if (loggedInUser && selectedUser) {
+      const senderId = loggedInUser.id;
+      const receiverId = selectedUser.clerkId;
+
+      await notifyTyping(senderId, receiverId, 'typing');
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      typingTimeoutRef.current = setTimeout(async () => {
+        await notifyTyping(senderId, receiverId, 'stopped'); 
+      }, 3000);
+    }
   };
 
   return (
     <ResizablePanelGroup
       direction="horizontal"
       className="h-screen"
-      onResize={handleResize as any} 
+      onResize={handleResize as any}
     >
       <ResizablePanel defaultSize={25} maxSize={50} minSize={0}>
         <div className={`flex flex-col h-full p-6 bg-black text-white ${isCollapsed ? "hidden" : "block"}`}>
@@ -116,6 +161,7 @@ const Inbox: React.FC = () => {
             .scroll-container {
               height: calc(100vh - 64px); /* Adjust height to fit within the screen */
               overflow-y: auto;
+              scroll-behavior: smooth; /* Enable smooth scrolling */
             }
 
             .scroll-container::-webkit-scrollbar {
@@ -128,7 +174,7 @@ const Inbox: React.FC = () => {
               scrollbar-width: none; /* Firefox */
             }
           `}</style>
-          <div className="font-serif text-lg mb-4 ">{'People'}</div>
+          <div className="font-serif text-lg mb-4">{'People'}</div>
           <div className="scroll-container w-full">
             <ul className="flex flex-col items-start w-full">
               {inboxUsers.map((user) => {
@@ -165,7 +211,7 @@ const Inbox: React.FC = () => {
       <ResizablePanel defaultSize={75} minSize={50} maxSize={100}>
         <div className="flex flex-col h-full p-6 bg-black text-white">
           {!selectedUser && (
-            <p className="text-lg mb-4 font-serif text-center mt-[300px]">Select a chat, to start messaging</p>
+            <p className="text-lg mb-4 font-serif text-center mt-[300px]">Select a chat to start messaging</p>
           )}
           {selectedUser && (
             <div className="scroll-container flex flex-col w-full">
@@ -173,6 +219,7 @@ const Inbox: React.FC = () => {
                 .scroll-container {
                   height: calc(100vh - 64px); /* Adjust height to fit within the screen */
                   overflow-y: auto;
+                  scroll-behavior: smooth; /* Enable smooth scrolling */
                 }
 
                 .scroll-container::-webkit-scrollbar {
@@ -192,6 +239,8 @@ const Inbox: React.FC = () => {
                   margin-bottom: 10px;
                   display: flex;
                   flex-direction: column;
+                  position: relative;
+                  cursor: pointer;
                 }
 
                 .message.sent {
@@ -211,13 +260,116 @@ const Inbox: React.FC = () => {
                   font-weight: bold;
                   margin-bottom: 5px;
                 }
+
+                .typing-indicator {
+                  display: flex;
+                  align-items: center;
+                  padding: 10px 0; /* Added padding to the Y-axis */
+                }
+
+                .typing-indicator span {
+                  background-color: #ccc;
+                  border-radius: 50%;
+                  display: inline-block;
+                  height: 8px;
+                  margin: 0 2px;
+                  width: 8px;
+                }
+
+                .typing-indicator span:nth-child(1) {
+                  animation: typing 1s infinite;
+                }
+
+                .typing-indicator span:nth-child(2) {
+                  animation: typing 1s infinite 0.2s;
+                }
+
+                .typing-indicator span:nth-child(3) {
+                  animation: typing 1s infinite 0.4s;
+                }
+
+                @keyframes typing {
+                  0% {
+                    transform: translateY(0);
+                  }
+                  50% {
+                    transform: translateY(-3px);
+                  }
+                  100% {
+                    transform: translateY(0);
+                  }
+                }
+
+                .emoji-picker-container {
+                  display: flex;
+                  flex-direction: column;
+                  position: absolute;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  background: transparent;
+                  border-radius: 8px;
+                  padding: 10px;
+                  opacity: 0;
+                  animation: fadeIn 0.5s forwards;
+                }
+
+                .emoji-picker-container span {
+                  cursor: pointer;
+                  font-size: 20px;
+                  margin: 5px 0;
+                  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6); /* Adding shadow to the emoji */
+                  opacity: 0;
+                  animation: fadeIn 0.3s forwards;
+                }
+
+                .emoji-picker-container span:nth-child(1) {
+                  animation-delay: 0.1s;
+                }
+
+                .emoji-picker-container span:nth-child(2) {
+                  animation-delay: 0.2s;
+                }
+
+                .emoji-picker-container span:nth-child(3) {
+                  animation-delay: 0.3s;
+                }
+
+                @keyframes fadeIn {
+                  to {
+                    opacity: 1;
+                  }
+                }
               `}</style>
               {messages.map((message, index) => (
-                <div key={index} className={`message ${message.senderId === loggedInUser?.id ? "sent" : "received"}`}>
+                <div 
+                  key={index} 
+                  className={`message ${message.senderId === loggedInUser?.id ? "sent" : "received"}`}
+                  onMouseEnter={() => setEmojiPickerVisible(index)}
+                  onMouseLeave={() => setEmojiPickerVisible(null)}
+                >
                   <span className="sender">{message.senderId === loggedInUser?.id ? "" : selectedUser.username}</span>
                   {message.text}
+                  {message.reaction && (
+                    <div className="emoji-icon">
+                      {message.reaction}
+                    </div>
+                  )}
+                  {isEmojiPickerVisible === index && (
+                    <div className="emoji-picker-container" style={{ left: message.senderId === loggedInUser?.id ? 'auto' : '100%', right: message.senderId === loggedInUser?.id ? '100%' : 'auto' }}>
+                      {emojis.map((emoji, i) => (
+                        <span key={i} onClick={() => handleEmojiClick(emoji, index)}>{emoji}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
+              {otherUserTyping && (
+                <div className="typing-indicator" ref={typingIndicatorRef}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
           )}
@@ -229,13 +381,13 @@ const Inbox: React.FC = () => {
                 handleSendMessage();
               }}
             >
-              <button type="button" onClick={() => setEmojiPickerVisible(!isEmojiPickerVisible)}>
+              <button type="button" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                 <BsEmojiGrinFill size={20} />
               </button>
-              {isEmojiPickerVisible && (
+              {showEmojiPicker && (
                 <div style={{ position: "absolute", bottom: "50px", left: "50px" }}>
                   <EmojiPicker
-                    onEmojiClick={handleEmojiClick}
+                    onEmojiClick={(emojiObject: EmojiClickData) => setNewMessage(newMessage + emojiObject.emoji)}
                     emojiStyle={EmojiStyle.APPLE}
                     theme={Theme.DARK}
                   />
@@ -244,13 +396,13 @@ const Inbox: React.FC = () => {
               <input
                 type="text"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                className="flex-1 px-4 py-2 text-white rounded-l-md bg-black "
-                placeholder="send a message..."
+                onChange={triggerTypingEvent}
+                className="flex-1 px-4 py-2 text-white rounded-l-md bg-black"
+                placeholder="Send a message..."
               />
               <button
                 type="submit"
-                className="px-4 py-2  text-white rounded-r-md"
+                className="px-4 py-2 text-white rounded-r-md"
               >
                 <SendHorizontal className="hover:text-slate-400" />
               </button>
