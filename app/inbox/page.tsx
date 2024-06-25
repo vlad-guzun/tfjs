@@ -16,6 +16,7 @@ import { BsEmojiGrinFill } from "react-icons/bs";
 import useActiveList from "@/hooks/useActiveList";
 import { PulsatingCircle } from "@/components/PulsingCircle";
 import { EmojiStyle, Theme, EmojiClickData } from "emoji-picker-react";
+import { useUserStore } from "../../hooks/useStore";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -28,7 +29,7 @@ interface Message {
 const emojis = ["😀", "❤️", "👍"];
 
 const Inbox: React.FC = () => {
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedUser, setSelectedUser] = useUserStore((state) => [state.selectedUser, state.setSelectedUser]);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const [inboxUsers, setInboxUsers] = useState<any[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -64,21 +65,32 @@ const Inbox: React.FC = () => {
 
   useEffect(() => {
     const getYourInboxUsers = async () => {
-      const users = await GetYourInboxUsers(loggedInUser?.id);
-      setInboxUsers(users);
+      if (loggedInUser && loggedInUser.id) {
+        const users = await GetYourInboxUsers(loggedInUser.id);
+        setInboxUsers(users);
+
+        if (selectedUser) {
+          const fetchedMessages = await fetchMessages(loggedInUser.id, selectedUser.clerkId);
+          setMessages(fetchedMessages || []);
+        }
+      }
     };
-    if (loggedInUser) {
-      getYourInboxUsers();
-    }
-  }, [loggedInUser]);
+
+    getYourInboxUsers();
+  }, [loggedInUser, selectedUser]);
 
   useEffect(() => {
-    if (selectedUser && loggedInUser) {
+    if (selectedUser && loggedInUser && loggedInUser.id) {
       const channelName = `conversation-${loggedInUser.id}-${selectedUser.clerkId}`;
       const channel = pusherClient.subscribe(channelName);
 
       const handleMessage = (message: Message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
+        setMessages((prevMessages) => {
+          if (prevMessages.some(msg => msg.senderId === message.senderId && msg.text === message.text)) {
+            return prevMessages;
+          }
+          return [...prevMessages, message];
+        });
       };
 
       const handleTypingEvent = (data: { senderId: string; status: string }) => {
@@ -100,7 +112,7 @@ const Inbox: React.FC = () => {
 
   const handleUserClick = async (user: any) => {
     setSelectedUser(user);
-    if (loggedInUser && user) {
+    if (loggedInUser && loggedInUser.id && user && user.clerkId) {
       const fetchedMessages = await fetchMessages(loggedInUser.id, user.clerkId);
       setMessages(fetchedMessages || []);
     }
@@ -114,7 +126,9 @@ const Inbox: React.FC = () => {
       if (senderId && receiverId) {
         await createMessage(senderId, receiverId, newMessage.trim());
 
-        setMessages([...messages, { senderId, text: newMessage.trim() }]);
+        // Remove direct state update to avoid duplication
+        // setMessages([...messages, { senderId, text: newMessage.trim() }]);
+        
         setNewMessage("");
         setShowEmojiPicker(false);
         setEmojiPickerVisible(null);

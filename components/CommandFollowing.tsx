@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/command";
 import Image from "next/image";
 import { IoMdSend } from "react-icons/io";
-import { useUserStore } from "../store/userStore";
 import { addUserToInbox } from "@/lib/actions/user.action";
 import { useUser } from "@clerk/nextjs";
+import { useUserStore} from "../hooks/useStore";
 
 export function CommandFollowing({ following }: { following: User_with_interests_location_reason[] }) {
   const [searchTerm, setSearchTerm] = React.useState("");

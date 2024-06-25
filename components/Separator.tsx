@@ -4,12 +4,17 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { SignedIn, UserButton, useUser } from '@clerk/nextjs';
-import { Cog, SendHorizonal, Settings, User, UserMinus, UserPlus } from "lucide-react";
+import { Cog, SendHorizontal, Settings, User, UserMinus, UserPlus } from "lucide-react";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { useUserStore } from "../hooks/useStore"; // Update the import path as necessary
+import { addUserToInbox } from "@/lib/actions/user.action"; // Update the import path as necessary
 
 export function SeparatorForProfile({ userProfile }: { userProfile: User_with_interests_location_reason }) {
   const [followStatus, setFollowStatus] = useState<string>("");
   const { user } = useUser();
+  const setSelectedUser = useUserStore((state) => state.setSelectedUser);
+  const router = useRouter();
 
   useEffect(() => {
     setFollowStatus(getFollowStatus());
@@ -63,6 +68,14 @@ export function SeparatorForProfile({ userProfile }: { userProfile: User_with_in
     }
   };
 
+  const handleSendMessage = async () => {
+    if (user) {
+      await addUserToInbox(user.id, userProfile.clerkId);
+      setSelectedUser(userProfile);
+      router.push("/inbox");
+    }
+  };
+
   return (
     <div className="flex flex-col items-center mt-56 mx-24">
       <div className="w-70p space-y-1">
@@ -78,7 +91,6 @@ export function SeparatorForProfile({ userProfile }: { userProfile: User_with_in
         <div className="text-slate-400">{userProfile?.location}</div>
         <Separator orientation="vertical" className="h-5 border border-slate-700" />
         <div className="text-slate-400">{userProfile?.interests}</div>
-        
       </div>
       <div className="flex gap-4 items-center justify-center">
         {followStatus === "follow" ? (
@@ -86,12 +98,12 @@ export function SeparatorForProfile({ userProfile }: { userProfile: User_with_in
             <UserPlus />
           </Button>
         ) : (
-          <Button onClick={handleUnfollow} className="text-white bg-black hover:text-black hover:bg-white mt-3 ">
+          <Button onClick={handleUnfollow} className="text-white bg-black hover:text-black hover:bg-white mt-3">
             <UserMinus />
           </Button>
         )}
-        <Button className="mt-3 text-white bg-black  hover:bg-white hover:text-black">
-          <SendHorizonal/>
+        <Button className="mt-3 text-white bg-black hover:bg-white hover:text-black" onClick={handleSendMessage}>
+          <SendHorizontal />
         </Button>
       </div>
     </div>

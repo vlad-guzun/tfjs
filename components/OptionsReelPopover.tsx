@@ -2,6 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ArrowDownToLine, AtSign, EllipsisVertical, Share2, Trash } from "lucide-react";
 import { DeleteReelDialog } from "./DeleteReelDialog";
 import { EditReelDialog } from "./EditReelDialog";
+import { MentionDialog } from "./MentionDialogPopover"; 
 
 export function OptionsReelPopover({ reel, onDelete, onEdit }: { reel: VideoPostProps, onDelete: () => void, onEdit: (newTitle: string) => void }) {
   const downloadReel = (url: string, title: string) => {
@@ -32,6 +33,11 @@ export function OptionsReelPopover({ reel, onDelete, onEdit }: { reel: VideoPost
     }
   };
 
+  const handleMention = (username: string) => {
+    console.log(`Mentioned user: @${username}`);
+    // You can handle the mention functionality here (e.g., insert into a text input)
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -42,8 +48,7 @@ export function OptionsReelPopover({ reel, onDelete, onEdit }: { reel: VideoPost
           <EditReelDialog reel={reel} onEdit={onEdit} />
         </div>
         <div className="flex items-center mb-2 cursor-pointer hover:text-gray-400">
-          <AtSign className="mr-2" size={15} />
-          <p className="font-serif text-sm">mention</p>
+          <MentionDialog reel={reel} onMention={handleMention} />
         </div>
         <div
           className="flex items-center mb-2 cursor-pointer hover:text-gray-400"
